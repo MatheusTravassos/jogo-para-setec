@@ -1,1 +1,692 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nave Espacial - Jogo Simples</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+            color: #ffffff;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #a0a0ff;
+        }
+        
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00ffff;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #a0a0ff;
+        }
+        
+        .game-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: #000;
+            border: 3px solid #00ffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
+            margin-bottom: 20px;
+        }
+        
+        #gameCanvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .player {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 10 L70 50 L50 70 L30 50 Z" fill="%2300ffff"/><circle cx="50" cy="50" r="10" fill="%23007070"/></svg>') no-repeat center;
+            background-size: contain;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+        
+        .enemy {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,10 70,40 50,70 30,40" fill="%23ff0000"/><circle cx="50" cy="40" r="15" fill="%23700000"/></svg>') no-repeat center;
+            background-size: contain;
+            top: -30px;
+            z-index: 5;
+        }
+        
+        .bullet {
+            position: absolute;
+            width: 5px;
+            height: 15px;
+            background: #ffff00;
+            border-radius: 2px;
+            z-index: 8;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            background: linear-gradient(to bottom, #00aaff, #0066cc);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(to bottom, #00ccff, #0088ff);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        .instructions {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            margin-top: 20px;
+            border: 1px solid #4444ff;
+        }
+        
+        .instructions h2 {
+            color: #00ffff;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .instructions ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .instructions li:before {
+            content: "▶";
+            color: #00ffff;
+            position: absolute;
+            left: 0;
+        }
+        
+        .game-over {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            display: none;
+        }
+        
+        .game-over h2 {
+            font-size: 3rem;
+            color: #ff0000;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #ff0000;
+        }
+        
+        .game-over p {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: #ffffff;
+        }
+        
+        .power-up {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%2300ff00"/><text x="50" y="60" font-size="40" text-anchor="middle" fill="white">+</text></svg>') no-repeat center;
+            background-size: contain;
+            z-index: 7;
+        }
+        
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .game-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>NAVE ESPACIAL</h1>
+            <p class="subtitle">Desvie dos asteroides e colete power-ups!</p>
+        </header>
+        
+        <div class="game-stats">
+            <div class="stat">
+                <div class="stat-value" id="score">0</div>
+                <div class="stat-label">PONTUAÇÃO</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="lives">3</div>
+                <div class="stat-label">VIDAS</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="level">1</div>
+                <div class="stat-label">NÍVEL</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="highScore">0</div>
+                <div class="stat-label">RECORDE</div>
+            </div>
+        </div>
+        
+        <div class="game-container">
+            <div id="player" class="player"></div>
+            <div class="game-over" id="gameOver">
+                <h2>FIM DE JOGO!</h2>
+                <p>Sua pontuação: <span id="finalScore">0</span></p>
+                <button onclick="restartGame()">
+                    <span>JOGAR NOVAMENTE</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="moveLeft()">
+                <span>← ESQUERDA</span>
+            </button>
+            <button onclick="startGame()" id="startBtn">
+                <span>INICIAR JOGO</span>
+            </button>
+            <button onclick="shoot()">
+                <span>ATIRAR ↑</span>
+            </button>
+            <button onclick="moveRight()">
+                <span>DIREITA →</span>
+            </button>
+        </div>
+        
+        <div class="instructions">
+            <h2>COMO JOGAR</h2>
+            <ul>
+                <li>Use os botões ESQUERDA e DIREITA para mover a nave</li>
+                <li>Pressione ATIRAR para destruir asteroides</li>
+                <li>Desvie dos asteroides vermelhos para não perder vidas</li>
+                <li>Colete os power-ups verdes para ganhar pontos extras</li>
+                <li>Cada nível fica mais difícil com mais asteroides</li>
+            </ul>
+        </div>
+    </div>
 
+    <script>
+        // Elementos do jogo
+        const player = document.getElementById('player');
+        const gameContainer = document.querySelector('.game-container');
+        const scoreElement = document.getElementById('score');
+        const livesElement = document.getElementById('lives');
+        const levelElement = document.getElementById('level');
+        const highScoreElement = document.getElementById('highScore');
+        const gameOverScreen = document.getElementById('gameOver');
+        const finalScoreElement = document.getElementById('finalScore');
+        const startBtn = document.getElementById('startBtn');
+        
+        // Variáveis do jogo
+        let gameActive = false;
+        let score = 0;
+        let lives = 3;
+        let level = 1;
+        let highScore = localStorage.getItem('highScore') || 0;
+        let playerPosition = 50; // porcentagem
+        let enemies = [];
+        let bullets = [];
+        let powerUps = [];
+        let enemySpeed = 2;
+        let enemySpawnRate = 1000; // ms
+        let powerUpSpawnRate = 5000; // ms
+        let gameInterval;
+        let enemyInterval;
+        let powerUpInterval;
+        
+        // Inicializar o jogo
+        function init() {
+            highScoreElement.textContent = highScore;
+            document.addEventListener('keydown', handleKeyPress);
+        }
+        
+        // Iniciar o jogo
+        function startGame() {
+            if (gameActive) return;
+            
+            resetGame();
+            gameActive = true;
+            startBtn.disabled = true;
+            startBtn.innerHTML = '<span>JOGANDO...</span>';
+            
+            // Movimentação contínua dos inimigos
+            gameInterval = setInterval(updateGame, 16); // ~60 FPS
+            
+            // Gerar inimigos
+            enemyInterval = setInterval(createEnemy, enemySpawnRate);
+            
+            // Gerar power-ups
+            powerUpInterval = setInterval(createPowerUp, powerUpSpawnRate);
+        }
+        
+        // Reiniciar o jogo
+        function restartGame() {
+            gameOverScreen.style.display = 'none';
+            clearIntervals();
+            startGame();
+        }
+        
+        // Resetar variáveis do jogo
+        function resetGame() {
+            score = 0;
+            lives = 3;
+            level = 1;
+            enemySpeed = 2;
+            enemySpawnRate = 1000;
+            playerPosition = 50;
+            
+            updatePlayerPosition();
+            updateStats();
+            
+            // Remover todos os inimigos, balas e power-ups
+            enemies.forEach(enemy => enemy.remove());
+            bullets.forEach(bullet => bullet.remove());
+            powerUps.forEach(powerUp => powerUp.remove());
+            
+            enemies = [];
+            bullets = [];
+            powerUps = [];
+        }
+        
+        // Atualizar o jogo a cada frame
+        function updateGame() {
+            moveEnemies();
+            moveBullets();
+            movePowerUps();
+            checkCollisions();
+        }
+        
+        // Criar um inimigo
+        function createEnemy() {
+            const enemy = document.createElement('div');
+            enemy.className = 'enemy';
+            
+            // Posição aleatória
+            const leftPosition = Math.random() * 90 + 5; // 5% a 95%
+            enemy.style.left = `${leftPosition}%`;
+            
+            gameContainer.appendChild(enemy);
+            enemies.push({
+                element: enemy,
+                left: leftPosition,
+                top: -30
+            });
+        }
+        
+        // Criar um power-up
+        function createPowerUp() {
+            const powerUp = document.createElement('div');
+            powerUp.className = 'power-up';
+            
+            // Posição aleatória
+            const leftPosition = Math.random() * 90 + 5; // 5% a 95%
+            powerUp.style.left = `${leftPosition}%`;
+            powerUp.style.top = '-20px';
+            
+            gameContainer.appendChild(powerUp);
+            powerUps.push({
+                element: powerUp,
+                left: leftPosition,
+                top: -20
+            });
+        }
+        
+        // Mover inimigos
+        function moveEnemies() {
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const enemy = enemies[i];
+                enemy.top += enemySpeed;
+                enemy.element.style.top = `${enemy.top}px`;
+                
+                // Remover inimigos que saíram da tela
+                if (enemy.top > gameContainer.offsetHeight) {
+                    enemy.element.remove();
+                    enemies.splice(i, 1);
+                }
+            }
+        }
+        
+        // Mover power-ups
+        function movePowerUps() {
+            for (let i = powerUps.length - 1; i >= 0; i--) {
+                const powerUp = powerUps[i];
+                powerUp.top += enemySpeed * 0.7; // Mais lento que os inimigos
+                powerUp.element.style.top = `${powerUp.top}px`;
+                
+                // Remover power-ups que saíram da tela
+                if (powerUp.top > gameContainer.offsetHeight) {
+                    powerUp.element.remove();
+                    powerUps.splice(i, 1);
+                }
+            }
+        }
+        
+        // Mover balas
+        function moveBullets() {
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const bullet = bullets[i];
+                bullet.top -= 5;
+                bullet.element.style.top = `${bullet.top}px`;
+                
+                // Remover balas que saíram da tela
+                if (bullet.top < -15) {
+                    bullet.element.remove();
+                    bullets.splice(i, 1);
+                }
+            }
+        }
+        
+        // Verificar colisões
+        function checkCollisions() {
+            // Colisão entre balas e inimigos
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const bullet = bullets[i];
+                
+                for (let j = enemies.length - 1; j >= 0; j--) {
+                    const enemy = enemies[j];
+                    
+                    if (isColliding(bullet, enemy)) {
+                        // Colisão detectada
+                        bullet.element.remove();
+                        bullets.splice(i, 1);
+                        
+                        enemy.element.remove();
+                        enemies.splice(j, 1);
+                        
+                        // Pontuação
+                        score += 10;
+                        updateStats();
+                        
+                        break;
+                    }
+                }
+            }
+            
+            // Colisão entre jogador e inimigos
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const enemy = enemies[i];
+                
+                if (isColliding({left: playerPosition, top: 360, width: 40, height: 40}, enemy)) {
+                    // Colisão detectada
+                    enemy.element.remove();
+                    enemies.splice(i, 1);
+                    
+                    // Perder vida
+                    lives--;
+                    updateStats();
+                    
+                    // Efeito visual de dano
+                    player.style.background = 'red';
+                    setTimeout(() => {
+                        player.style.background = "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 10 L70 50 L50 70 L30 50 Z\" fill=\"%2300ffff\"/><circle cx=\"50\" cy=\"50\" r=\"10\" fill=\"%23007070\"/></svg>') no-repeat center";
+                    }, 200);
+                    
+                    if (lives <= 0) {
+                        gameOver();
+                    }
+                }
+            }
+            
+            // Colisão entre jogador e power-ups
+            for (let i = powerUps.length - 1; i >= 0; i--) {
+                const powerUp = powerUps[i];
+                
+                if (isColliding({left: playerPosition, top: 360, width: 40, height: 40}, powerUp)) {
+                    // Colisão detectada
+                    powerUp.element.remove();
+                    powerUps.splice(i, 1);
+                    
+                    // Ganhar pontos
+                    score += 50;
+                    updateStats();
+                    
+                    // Efeito visual
+                    player.style.background = 'green';
+                    setTimeout(() => {
+                        player.style.background = "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 10 L70 50 L50 70 L30 50 Z\" fill=\"%2300ffff\"/><circle cx=\"50\" cy=\"50\" r=\"10\" fill=\"%23007070\"/></svg>') no-repeat center";
+                    }, 200);
+                }
+            }
+            
+            // Aumentar nível conforme a pontuação
+            const newLevel = Math.floor(score / 100) + 1;
+            if (newLevel > level) {
+                level = newLevel;
+                levelUp();
+            }
+        }
+        
+        // Verificar se dois objetos estão colidindo
+        function isColliding(obj1, obj2) {
+            return (
+                obj1.left < obj2.left + 30 &&
+                obj1.left + 40 > obj2.left &&
+                obj1.top < obj2.top + 30 &&
+                obj1.top + 40 > obj2.top
+            );
+        }
+        
+        // Aumentar nível
+        function levelUp() {
+            levelElement.textContent = level;
+            
+            // Aumentar dificuldade
+            enemySpeed += 0.5;
+            enemySpawnRate = Math.max(300, 1000 - level * 100);
+            
+            // Limpar intervalos antigos e criar novos
+            clearInterval(enemyInterval);
+            enemyInterval = setInterval(createEnemy, enemySpawnRate);
+            
+            // Efeito visual
+            gameContainer.style.borderColor = '#ff00ff';
+            setTimeout(() => {
+                gameContainer.style.borderColor = '#00ffff';
+            }, 500);
+        }
+        
+        // Fim de jogo
+        function gameOver() {
+            gameActive = false;
+            clearIntervals();
+            
+            // Atualizar recorde
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('highScore', highScore);
+                highScoreElement.textContent = highScore;
+            }
+            
+            // Mostrar tela de fim de jogo
+            finalScoreElement.textContent = score;
+            gameOverScreen.style.display = 'flex';
+            
+            startBtn.disabled = false;
+            startBtn.innerHTML = '<span>INICIAR JOGO</span>';
+        }
+        
+        // Limpar intervalos
+        function clearIntervals() {
+            clearInterval(gameInterval);
+            clearInterval(enemyInterval);
+            clearInterval(powerUpInterval);
+        }
+        
+        // Atualizar estatísticas na tela
+        function updateStats() {
+            scoreElement.textContent = score;
+            livesElement.textContent = lives;
+            levelElement.textContent = level;
+        }
+        
+        // Atirar
+        function shoot() {
+            if (!gameActive) return;
+            
+            const bullet = document.createElement('div');
+            bullet.className = 'bullet';
+            bullet.style.left = `${playerPosition + 2}%`;
+            bullet.style.top = '360px';
+            
+            gameContainer.appendChild(bullet);
+            bullets.push({
+                element: bullet,
+                left: playerPosition + 2,
+                top: 360
+            });
+        }
+        
+        // Mover para a esquerda
+        function moveLeft() {
+            if (!gameActive) return;
+            
+            playerPosition = Math.max(5, playerPosition - 5);
+            updatePlayerPosition();
+        }
+        
+        // Mover para a direita
+        function moveRight() {
+            if (!gameActive) return;
+            
+            playerPosition = Math.min(95, playerPosition + 5);
+            updatePlayerPosition();
+        }
+        
+        // Atualizar posição do jogador
+        function updatePlayerPosition() {
+            player.style.left = `${playerPosition}%`;
+        }
+        
+        // Manipular pressionamento de teclas
+        function handleKeyPress(e) {
+            if (!gameActive) return;
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                    moveLeft();
+                    break;
+                case 'ArrowRight':
+                    moveRight();
+                    break;
+                case ' ':
+                case 'ArrowUp':
+                    shoot();
+                    e.preventDefault();
+                    break;
+            }
+        }
+        
+        // Inicializar o jogo quando a página carregar
+        window.onload = init;
+    </script>
+</body>
+</html>
