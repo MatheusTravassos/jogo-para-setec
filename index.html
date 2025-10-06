@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SETEC - Caça aos Números</title>
+    <title>SETEC - Conexão Tecnológica</title>
     <style>
         * {
             margin: 0;
@@ -37,7 +37,6 @@
             background: rgba(255, 255, 255, 0.1);
             padding: 20px;
             border-radius: 15px;
-            backdrop-filter: blur(10px);
             border: 2px solid rgba(255, 255, 255, 0.2);
         }
         
@@ -46,13 +45,11 @@
             font-weight: bold;
             margin-bottom: 10px;
             color: #4fc3f7;
-            text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
         }
         
         .subtitle {
             font-size: 1.2rem;
             color: #e3f2fd;
-            margin-bottom: 15px;
         }
         
         .game-info {
@@ -68,7 +65,6 @@
             padding: 15px;
             border-radius: 10px;
             text-align: center;
-            backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
@@ -76,7 +72,6 @@
             font-size: 2rem;
             font-weight: bold;
             color: #4fc3f7;
-            margin-bottom: 5px;
         }
         
         .info-label {
@@ -84,21 +79,9 @@
             color: #e3f2fd;
         }
         
-        .target-number {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #ffeb3b;
-            text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
-            margin: 10px 0;
-            padding: 10px 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            border: 2px solid #ffeb3b;
-        }
-        
         .game-board {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 10px;
             width: 100%;
             max-width: 500px;
@@ -106,53 +89,53 @@
             padding: 15px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
-            backdrop-filter: blur(10px);
             border: 2px solid rgba(255, 255, 255, 0.2);
         }
         
-        .number-cell {
+        .tech-card {
             aspect-ratio: 1;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, #3949ab, #5c6bc0);
-            border-radius: 8px;
-            font-size: 1.5rem;
-            font-weight: bold;
+            border-radius: 10px;
+            padding: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 2px solid transparent;
+            text-align: center;
         }
         
-        .number-cell:hover {
+        .tech-card:hover {
             transform: scale(1.05);
-            background: linear-gradient(135deg, #5c6bc0, #7986cb);
             border-color: #4fc3f7;
         }
         
-        .number-cell.found {
-            background: linear-gradient(135deg, #43a047, #66bb6a);
-            transform: scale(0.95);
+        .tech-card.selected {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
             border-color: #ffeb3b;
         }
         
-        .number-cell.wrong {
-            background: linear-gradient(135deg, #e53935, #ef5350);
-            animation: shake 0.5s;
+        .tech-card.matched {
+            background: linear-gradient(135deg, #43a047, #66bb6a);
+            border-color: #69f0ae;
         }
         
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+        .tech-icon {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+        
+        .tech-name {
+            font-size: 0.8rem;
+            font-weight: bold;
         }
         
         .controls {
             display: flex;
             gap: 15px;
             margin: 20px 0;
-            flex-wrap: wrap;
-            justify-content: center;
         }
         
         button {
@@ -165,25 +148,11 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
         
         button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
             background: linear-gradient(135deg, #29b6f6, #03a9f4);
-        }
-        
-        button:active {
-            transform: translateY(1px);
-        }
-        
-        button.secondary {
-            background: linear-gradient(135deg, #ff9800, #f57c00);
-        }
-        
-        button.secondary:hover {
-            background: linear-gradient(135deg, #f57c00, #ef6c00);
         }
         
         .instructions {
@@ -192,7 +161,6 @@
             border-radius: 10px;
             width: 100%;
             margin-top: 20px;
-            backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
@@ -214,19 +182,19 @@
         }
         
         .instructions li:before {
-            content: "►";
+            content: "▸";
             color: #ffeb3b;
             position: absolute;
             left: 0;
         }
         
-        .level-up {
+        .victory-message {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -235,54 +203,23 @@
             display: none;
         }
         
-        .level-up h2 {
+        .victory-message h2 {
             font-size: 3rem;
             color: #4fc3f7;
             margin-bottom: 20px;
-            text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
-        }
-        
-        .level-up p {
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-            color: #ffffff;
-            text-align: center;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            max-width: 300px;
-            height: 10px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
-            margin: 10px 0;
-            overflow: hidden;
-        }
-        
-        .progress {
-            height: 100%;
-            background: linear-gradient(90deg, #4fc3f7, #ffeb3b);
-            border-radius: 5px;
-            transition: width 0.5s ease;
         }
         
         @media (max-width: 600px) {
             .game-board {
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(3, 1fr);
             }
             
             .game-info {
                 grid-template-columns: 1fr;
-                gap: 10px;
             }
             
             .controls {
                 flex-direction: column;
-                width: 100%;
-            }
-            
-            button {
-                width: 100%;
             }
         }
     </style>
@@ -291,7 +228,7 @@
     <div class="container">
         <div class="header">
             <div class="logo">SETEC</div>
-            <div class="subtitle">Secretaria de Tecnologia - Caça aos Números</div>
+            <div class="subtitle">Secretaria de Tecnologia - Conexão Tecnológica</div>
         </div>
         
         <div class="game-info">
@@ -300,97 +237,107 @@
                 <div class="info-label">PONTUAÇÃO</div>
             </div>
             <div class="info-card">
-                <div class="info-value" id="level">1</div>
-                <div class="info-label">NÍVEL</div>
+                <div class="info-value" id="pairs">0</div>
+                <div class="info-label">PARES ENCONTRADOS</div>
             </div>
             <div class="info-card">
-                <div class="info-value" id="time">60</div>
-                <div class="info-label">TEMPO</div>
+                <div class="info-value" id="moves">0</div>
+                <div class="info-label">JOGADAS</div>
             </div>
         </div>
         
-        <div class="target-number" id="targetNumber">15</div>
-        
         <div class="game-board" id="gameBoard">
-            <!-- As células serão geradas pelo JavaScript -->
-        </div>
-        
-        <div class="progress-bar">
-            <div class="progress" id="progressBar" style="width: 0%"></div>
+            <!-- Cartas serão geradas pelo JavaScript -->
         </div>
         
         <div class="controls">
             <button onclick="startGame()" id="startBtn">Iniciar Jogo</button>
-            <button onclick="resetGame()" class="secondary">Reiniciar</button>
-            <button onclick="showHint()" class="secondary">Dica</button>
+            <button onclick="resetGame()">Reiniciar</button>
         </div>
         
         <div class="instructions">
             <h3>COMO JOGAR</h3>
             <ul>
-                <li>Encontre o número alvo destacado em amarelo</li>
-                <li>Clique nos números corretos para ganhar pontos</li>
-                <li>Cada nível aumenta a dificuldade</li>
-                <li>Complete antes do tempo acabar!</li>
+                <li>Encontre os pares de tecnologias correspondentes</li>
+                <li>Clique em duas cartas para revelá-las</li>
+                <li>Se formarem um par, elas permanecem viradas</li>
+                <li>Tente encontrar todos os pares com o menor número de jogadas</li>
             </ul>
         </div>
         
-        <div class="level-up" id="levelUp">
-            <h2>NÍVEL COMPLETO!</h2>
-            <p>Você avançou para o nível <span id="nextLevel">2</span></p>
-            <button onclick="nextLevel()">Continuar</button>
+        <div class="victory-message" id="victoryMessage">
+            <h2>PARABÉNS!</h2>
+            <p>Você completou o jogo em <span id="finalMoves">0</span> jogadas!</p>
+            <button onclick="playAgain()">Jogar Novamente</button>
         </div>
     </div>
 
     <script>
         // Elementos do jogo
         const gameBoard = document.getElementById('gameBoard');
-        const targetNumberElement = document.getElementById('targetNumber');
         const scoreElement = document.getElementById('score');
-        const levelElement = document.getElementById('level');
-        const timeElement = document.getElementById('time');
-        const progressBar = document.getElementById('progressBar');
-        const levelUpScreen = document.getElementById('levelUp');
-        const nextLevelElement = document.getElementById('nextLevel');
+        const pairsElement = document.getElementById('pairs');
+        const movesElement = document.getElementById('moves');
+        const victoryMessage = document.getElementById('victoryMessage');
+        const finalMovesElement = document.getElementById('finalMoves');
         const startBtn = document.getElementById('startBtn');
         
+        // Tecnologias para o jogo (pares)
+        const technologies = [
+            { name: "HTML", icon: "🌐", description: "Linguagem de Marcação" },
+            { name: "CSS", icon: "🎨", description: "Estilização" },
+            { name: "JS", icon: "⚡", description: "Programação" },
+            { name: "Python", icon: "🐍", description: "IA e Dados" },
+            { name: "Java", icon: "☕", description: "Enterprise" },
+            { name: "SQL", icon: "🗃️", description: "Banco de Dados" },
+            { name: "React", icon: "⚛️", description: "Frontend" },
+            { name: "Node.js", icon: "🟢", description: "Backend" }
+        ];
+        
         // Variáveis do jogo
+        let cards = [];
+        let selectedCards = [];
+        let matchedPairs = 0;
+        let totalPairs = technologies.length;
+        let moves = 0;
         let score = 0;
-        let level = 1;
-        let timeLeft = 60;
         let gameActive = false;
-        let gameTimer;
-        let targetNumber;
-        let numbersToFind = [];
-        let numbersFound = 0;
-        let totalNumbers = 3;
         
         // Inicializar o jogo
         function init() {
-            createGameBoard();
-            updateDisplay();
+            createCards();
         }
         
-        // Criar o tabuleiro do jogo
-        function createGameBoard() {
+        // Criar as cartas do jogo
+        function createCards() {
             gameBoard.innerHTML = '';
+            cards = [];
             
-            // Gerar números aleatórios para o tabuleiro
-            const numbers = [];
-            const boardSize = level <= 3 ? 20 : 25;
+            // Duplicar as tecnologias para formar pares
+            const gameTechnologies = [...technologies, ...technologies];
             
-            // Adicionar números aleatórios
-            for (let i = 0; i < boardSize; i++) {
-                numbers.push(Math.floor(Math.random() * 50) + 1);
-            }
+            // Embaralhar as cartas
+            shuffleArray(gameTechnologies);
             
-            // Criar células
-            numbers.forEach((number, index) => {
-                const cell = document.createElement('div');
-                cell.className = 'number-cell';
-                cell.textContent = number;
-                cell.addEventListener('click', () => checkNumber(number, cell));
-                gameBoard.appendChild(cell);
+            // Criar as cartas no tabuleiro
+            gameTechnologies.forEach((tech, index) => {
+                const card = document.createElement('div');
+                card.className = 'tech-card';
+                card.innerHTML = `
+                    <div class="tech-icon">?</div>
+                    <div class="tech-name">?</div>
+                `;
+                card.dataset.index = index;
+                card.dataset.tech = tech.name;
+                
+                card.addEventListener('click', () => selectCard(card, tech));
+                gameBoard.appendChild(card);
+                cards.push({
+                    element: card,
+                    tech: tech,
+                    isFlipped: false,
+                    isMatched: false
+                });
             });
         }
         
@@ -402,200 +349,130 @@
             startBtn.disabled = true;
             startBtn.textContent = 'Jogo em Andamento';
             
-            // Configurar nível
-            setupLevel();
-            
-            // Iniciar timer
-            timeLeft = 60 - (level * 5);
-            if (timeLeft < 20) timeLeft = 20;
-            
+            // Reiniciar contadores
+            matchedPairs = 0;
+            moves = 0;
+            score = 0;
             updateDisplay();
-            
-            gameTimer = setInterval(() => {
-                timeLeft--;
-                updateDisplay();
-                
-                if (timeLeft <= 0) {
-                    endGame();
-                }
-            }, 1000);
         }
         
-        // Configurar nível
-        function setupLevel() {
-            numbersFound = 0;
-            totalNumbers = 2 + level;
+        // Selecionar uma carta
+        function selectCard(card, tech) {
+            if (!gameActive) return;
             
-            // Gerar números alvo
-            numbersToFind = [];
-            for (let i = 0; i < totalNumbers; i++) {
-                numbersToFind.push(Math.floor(Math.random() * 50) + 1);
+            const cardIndex = parseInt(card.dataset.index);
+            const cardData = cards[cardIndex];
+            
+            // Verificar se a carta já foi virada ou está pareada
+            if (cardData.isFlipped || cardData.isMatched || selectedCards.length >= 2) {
+                return;
             }
             
-            targetNumber = numbersToFind[0];
-            targetNumberElement.textContent = targetNumber;
+            // Virar a carta
+            cardData.isFlipped = true;
+            card.classList.add('selected');
+            card.innerHTML = `
+                <div class="tech-icon">${tech.icon}</div>
+                <div class="tech-name">${tech.name}</div>
+                <div style="font-size: 0.6rem; margin-top: 5px;">${tech.description}</div>
+            `;
             
-            // Atualizar progresso
-            updateProgress();
+            selectedCards.push(cardData);
             
-            // Recriar tabuleiro com os números alvo incluídos
-            createGameBoardWithTargets();
-        }
-        
-        // Criar tabuleiro com números alvo
-        function createGameBoardWithTargets() {
-            gameBoard.innerHTML = '';
-            
-            const numbers = [];
-            const boardSize = level <= 3 ? 20 : 25;
-            
-            // Adicionar números aleatórios
-            for (let i = 0; i < boardSize - totalNumbers; i++) {
-                let randomNum;
-                do {
-                    randomNum = Math.floor(Math.random() * 50) + 1;
-                } while (numbersToFind.includes(randomNum));
-                numbers.push(randomNum);
-            }
-            
-            // Adicionar números alvo
-            numbers.push(...numbersToFind);
-            
-            // Embaralhar números
-            shuffleArray(numbers);
-            
-            // Criar células
-            numbers.forEach((number, index) => {
-                const cell = document.createElement('div');
-                cell.className = 'number-cell';
-                cell.textContent = number;
-                cell.addEventListener('click', () => checkNumber(number, cell));
-                gameBoard.appendChild(cell);
-            });
-        }
-        
-        // Verificar número clicado
-        function checkNumber(number, cell) {
-            if (!gameActive || cell.classList.contains('found')) return;
-            
-            if (number === targetNumber) {
-                // Número correto
-                cell.classList.add('found');
-                numbersFound++;
+            // Verificar se duas cartas foram selecionadas
+            if (selectedCards.length === 2) {
+                moves++;
+                movesElement.textContent = moves;
                 
-                // Atualizar pontuação
-                score += 10 * level;
+                setTimeout(checkMatch, 800);
+            }
+        }
+        
+        // Verificar se as cartas selecionadas formam um par
+        function checkMatch() {
+            const [card1, card2] = selectedCards;
+            
+            if (card1.tech.name === card2.tech.name) {
+                // Par encontrado!
+                card1.isMatched = true;
+                card2.isMatched = true;
+                card1.element.classList.remove('selected');
+                card2.element.classList.remove('selected');
+                card1.element.classList.add('matched');
+                card2.element.classList.add('matched');
+                
+                matchedPairs++;
+                pairsElement.textContent = matchedPairs;
+                
+                // Pontuação baseada no número de movimentos
+                score += 100 - (moves * 2);
+                if (score < 10) score = 10;
                 scoreElement.textContent = score;
                 
-                // Atualizar progresso
-                updateProgress();
-                
-                // Verificar se completou o nível
-                if (numbersFound >= totalNumbers) {
-                    completeLevel();
-                } else {
-                    // Próximo número alvo
-                    targetNumber = numbersToFind[numbersFound];
-                    targetNumberElement.textContent = targetNumber;
+                // Verificar vitória
+                if (matchedPairs === totalPairs) {
+                    endGame();
                 }
             } else {
-                // Número errado
-                cell.classList.add('wrong');
-                setTimeout(() => {
-                    cell.classList.remove('wrong');
-                }, 500);
+                // Virar as cartas de volta
+                card1.isFlipped = false;
+                card2.isFlipped = false;
                 
-                // Penalidade de tempo
-                timeLeft = Math.max(1, timeLeft - 2);
+                card1.element.classList.remove('selected');
+                card2.element.classList.remove('selected');
+                
+                card1.element.innerHTML = `
+                    <div class="tech-icon">?</div>
+                    <div class="tech-name">?</div>
+                `;
+                
+                card2.element.innerHTML = `
+                    <div class="tech-icon">?</div>
+                    <div class="tech-name">?</div>
+                `;
             }
-        }
-        
-        // Atualizar barra de progresso
-        function updateProgress() {
-            const progress = (numbersFound / totalNumbers) * 100;
-            progressBar.style.width = `${progress}%`;
-        }
-        
-        // Completar nível
-        function completeLevel() {
-            clearInterval(gameTimer);
-            gameActive = false;
             
-            // Bônus por tempo restante
-            const timeBonus = timeLeft * level;
-            score += timeBonus;
-            scoreElement.textContent = score;
-            
-            // Mostrar tela de nível completo
-            nextLevelElement.textContent = level + 1;
-            levelUpScreen.style.display = 'flex';
+            selectedCards = [];
         }
         
-        // Próximo nível
-        function nextLevel() {
-            levelUpScreen.style.display = 'none';
-            level++;
-            levelElement.textContent = level;
-            startGame();
-        }
-        
-        // Finalizar jogo
+        // Finalizar o jogo
         function endGame() {
-            clearInterval(gameTimer);
             gameActive = false;
-            alert(`Fim de jogo! Sua pontuação final: ${score}`);
-            resetGame();
-        }
-        
-        // Reiniciar jogo
-        function resetGame() {
-            clearInterval(gameTimer);
-            gameActive = false;
-            score = 0;
-            level = 1;
-            timeLeft = 60;
             
-            scoreElement.textContent = score;
-            levelElement.textContent = level;
-            timeElement.textContent = timeLeft;
-            progressBar.style.width = '0%';
+            // Mostrar mensagem de vitória
+            finalMovesElement.textContent = moves;
+            victoryMessage.style.display = 'flex';
             
-            createGameBoard();
             startBtn.disabled = false;
             startBtn.textContent = 'Iniciar Jogo';
         }
         
-        // Mostrar dica
-        function showHint() {
-            if (!gameActive) return;
+        // Jogar novamente
+        function playAgain() {
+            victoryMessage.style.display = 'none';
+            resetGame();
+        }
+        
+        // Reiniciar o jogo
+        function resetGame() {
+            gameActive = false;
+            matchedPairs = 0;
+            moves = 0;
+            score = 0;
+            selectedCards = [];
             
-            // Encontrar uma célula com o número alvo e destacá-la
-            const cells = document.querySelectorAll('.number-cell');
-            let found = false;
+            updateDisplay();
+            createCards();
             
-            cells.forEach(cell => {
-                if (parseInt(cell.textContent) === targetNumber && !cell.classList.contains('found')) {
-                    cell.style.backgroundColor = '#ffeb3b';
-                    cell.style.color = '#1a237e';
-                    setTimeout(() => {
-                        cell.style.backgroundColor = '';
-                        cell.style.color = 'white';
-                    }, 1000);
-                    found = true;
-                }
-            });
-            
-            if (!found) {
-                alert('Número alvo não encontrado no tabuleiro!');
-            }
-            
-            // Penalidade por usar dica
-            timeLeft = Math.max(1, timeLeft - 5);
+            startBtn.disabled = false;
+            startBtn.textContent = 'Iniciar Jogo';
         }
         
         // Atualizar display
         function updateDisplay() {
-            timeElement.textContent = timeLeft;
+            scoreElement.textContent = score;
+            pairsElement.textContent = matchedPairs;
+            movesElement.textContent = moves;
         }
         
         // Embaralhar array
