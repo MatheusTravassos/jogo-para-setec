@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quebra-Cabeça Deslizante</title>
+    <title>SETEC - Caça aos Números</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Arial', sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
+            background: linear-gradient(135deg, #1a237e, #283593, #303f9f);
+            color: white;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -23,131 +23,155 @@
         }
         
         .container {
-            max-width: 500px;
+            max-width: 800px;
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
         
-        header {
+        .header {
             text-align: center;
             margin-bottom: 20px;
             width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
         
-        h1 {
+        .logo {
             font-size: 2.5rem;
+            font-weight: bold;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            color: #4fc3f7;
+            text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
         }
         
         .subtitle {
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-            color: #e0e0ff;
+            font-size: 1.2rem;
+            color: #e3f2fd;
+            margin-bottom: 15px;
         }
         
         .game-info {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
             width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .info-card {
             background: rgba(255, 255, 255, 0.1);
             padding: 15px;
             border-radius: 10px;
-            margin-bottom: 20px;
-            backdrop-filter: blur(10px);
+            text-align: center;
+            backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        .info-item {
-            text-align: center;
-        }
-        
         .info-value {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: bold;
-            color: #ffeb3b;
+            color: #4fc3f7;
+            margin-bottom: 5px;
         }
         
         .info-label {
             font-size: 0.9rem;
-            color: #e0e0ff;
+            color: #e3f2fd;
         }
         
-        .puzzle-container {
-            width: 300px;
-            height: 300px;
-            background: rgba(0, 0, 0, 0.2);
+        .target-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ffeb3b;
+            text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
+            margin: 10px 0;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.3);
             border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 20px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 5px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid #ffeb3b;
         }
         
-        .tile {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            border-radius: 8px;
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-width: 500px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .number-cell {
+            aspect-ratio: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            background: linear-gradient(135deg, #3949ab, #5c6bc0);
+            border-radius: 8px;
+            font-size: 1.5rem;
             font-weight: bold;
-            color: white;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            user-select: none;
+            border: 2px solid transparent;
         }
         
-        .tile:hover {
+        .number-cell:hover {
             transform: scale(1.05);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #5c6bc0, #7986cb);
+            border-color: #4fc3f7;
         }
         
-        .empty {
-            background: transparent;
-            box-shadow: none;
-            cursor: default;
+        .number-cell.found {
+            background: linear-gradient(135deg, #43a047, #66bb6a);
+            transform: scale(0.95);
+            border-color: #ffeb3b;
         }
         
-        .empty:hover {
-            transform: none;
-            box-shadow: none;
+        .number-cell.wrong {
+            background: linear-gradient(135deg, #e53935, #ef5350);
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
         }
         
         .controls {
             display: flex;
             gap: 15px;
-            margin-bottom: 20px;
+            margin: 20px 0;
             flex-wrap: wrap;
             justify-content: center;
         }
         
         button {
-            background: linear-gradient(to bottom, #ff6b6b, #ee5a52);
+            background: linear-gradient(135deg, #4fc3f7, #29b6f6);
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 50px;
+            padding: 12px 25px;
+            border-radius: 25px;
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
         
         button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(to bottom, #ff7b7b, #ff6b6b);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #29b6f6, #03a9f4);
         }
         
         button:active {
@@ -155,11 +179,11 @@
         }
         
         button.secondary {
-            background: linear-gradient(to bottom, #4ecdc4, #44a08d);
+            background: linear-gradient(135deg, #ff9800, #f57c00);
         }
         
         button.secondary:hover {
-            background: linear-gradient(to bottom, #5eddd4, #4ecdc4);
+            background: linear-gradient(135deg, #f57c00, #ef6c00);
         }
         
         .instructions {
@@ -168,12 +192,12 @@
             border-radius: 10px;
             width: 100%;
             margin-top: 20px;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        .instructions h2 {
-            color: #ffeb3b;
+        .instructions h3 {
+            color: #4fc3f7;
             margin-bottom: 10px;
             text-align: center;
         }
@@ -190,20 +214,19 @@
         }
         
         .instructions li:before {
-            content: "✓";
-            color: #4ecdc4;
+            content: "►";
+            color: #ffeb3b;
             position: absolute;
             left: 0;
-            font-weight: bold;
         }
         
-        .victory-message {
+        .level-up {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.8);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -212,48 +235,45 @@
             display: none;
         }
         
-        .victory-message h2 {
+        .level-up h2 {
             font-size: 3rem;
-            color: #4ecdc4;
+            color: #4fc3f7;
             margin-bottom: 20px;
-            text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+            text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
         }
         
-        .victory-message p {
+        .level-up p {
             font-size: 1.5rem;
             margin-bottom: 30px;
             color: #ffffff;
             text-align: center;
         }
         
-        .confetti {
-            position: absolute;
-            width: 10px;
+        .progress-bar {
+            width: 100%;
+            max-width: 300px;
             height: 10px;
-            background: #ffeb3b;
-            border-radius: 50%;
-            opacity: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
         }
         
-        @keyframes confettiFall {
-            0% {
-                transform: translateY(-100px) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(1000px) rotate(360deg);
-                opacity: 0;
-            }
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #4fc3f7, #ffeb3b);
+            border-radius: 5px;
+            transition: width 0.5s ease;
         }
         
-        @media (max-width: 500px) {
-            h1 {
-                font-size: 2rem;
+        @media (max-width: 600px) {
+            .game-board {
+                grid-template-columns: repeat(4, 1fr);
             }
             
-            .puzzle-container {
-                width: 280px;
-                height: 280px;
+            .game-info {
+                grid-template-columns: 1fr;
+                gap: 10px;
             }
             
             .controls {
@@ -263,342 +283,328 @@
             
             button {
                 width: 100%;
-                justify-content: center;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>Quebra-Cabeça</h1>
-            <p class="subtitle">Deslize as peças para ordenar os números</p>
-        </header>
+        <div class="header">
+            <div class="logo">SETEC</div>
+            <div class="subtitle">Secretaria de Tecnologia - Caça aos Números</div>
+        </div>
         
         <div class="game-info">
-            <div class="info-item">
-                <div class="info-value" id="moves">0</div>
-                <div class="info-label">MOVIMENTOS</div>
+            <div class="info-card">
+                <div class="info-value" id="score">0</div>
+                <div class="info-label">PONTUAÇÃO</div>
             </div>
-            <div class="info-item">
-                <div class="info-value" id="time">0</div>
-                <div class="info-label">SEGUNDOS</div>
+            <div class="info-card">
+                <div class="info-value" id="level">1</div>
+                <div class="info-label">NÍVEL</div>
             </div>
-            <div class="info-item">
-                <div class="info-value" id="best">-</div>
-                <div class="info-label">MELHOR TEMPO</div>
+            <div class="info-card">
+                <div class="info-value" id="time">60</div>
+                <div class="info-label">TEMPO</div>
             </div>
         </div>
         
-        <div class="puzzle-container" id="puzzle">
-            <!-- As peças serão geradas pelo JavaScript -->
+        <div class="target-number" id="targetNumber">15</div>
+        
+        <div class="game-board" id="gameBoard">
+            <!-- As células serão geradas pelo JavaScript -->
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progressBar" style="width: 0%"></div>
         </div>
         
         <div class="controls">
-            <button onclick="shufflePuzzle()">
-                <span>Embaralhar</span>
-            </button>
-            <button onclick="startGame()" id="startBtn">
-                <span>Iniciar Jogo</span>
-            </button>
-            <button class="secondary" onclick="showSolution()">
-                <span>Ver Solução</span>
-            </button>
-            <button class="secondary" onclick="resetGame()">
-                <span>Reiniciar</span>
-            </button>
+            <button onclick="startGame()" id="startBtn">Iniciar Jogo</button>
+            <button onclick="resetGame()" class="secondary">Reiniciar</button>
+            <button onclick="showHint()" class="secondary">Dica</button>
         </div>
         
         <div class="instructions">
-            <h2>COMO JOGAR</h2>
+            <h3>COMO JOGAR</h3>
             <ul>
-                <li>Clique em uma peça ao lado do espaço vazio para movê-la</li>
-                <li>Ordene os números de 1 a 8 da esquerda para a direita</li>
-                <li>O espaço vazio deve ficar no canto inferior direito</li>
-                <li>Tente completar no menor tempo e com menos movimentos</li>
+                <li>Encontre o número alvo destacado em amarelo</li>
+                <li>Clique nos números corretos para ganhar pontos</li>
+                <li>Cada nível aumenta a dificuldade</li>
+                <li>Complete antes do tempo acabar!</li>
             </ul>
         </div>
         
-        <div class="victory-message" id="victoryMessage">
-            <h2>PARABÉNS!</h2>
-            <p>Você completou o quebra-cabeça em <span id="finalTime">0</span> segundos<br>e <span id="finalMoves">0</span> movimentos!</p>
-            <button onclick="playAgain()">
-                <span>Jogar Novamente</span>
-            </button>
+        <div class="level-up" id="levelUp">
+            <h2>NÍVEL COMPLETO!</h2>
+            <p>Você avançou para o nível <span id="nextLevel">2</span></p>
+            <button onclick="nextLevel()">Continuar</button>
         </div>
     </div>
 
     <script>
         // Elementos do jogo
-        const puzzleContainer = document.getElementById('puzzle');
-        const movesElement = document.getElementById('moves');
+        const gameBoard = document.getElementById('gameBoard');
+        const targetNumberElement = document.getElementById('targetNumber');
+        const scoreElement = document.getElementById('score');
+        const levelElement = document.getElementById('level');
         const timeElement = document.getElementById('time');
-        const bestElement = document.getElementById('best');
-        const victoryMessage = document.getElementById('victoryMessage');
-        const finalTimeElement = document.getElementById('finalTime');
-        const finalMovesElement = document.getElementById('finalMoves');
+        const progressBar = document.getElementById('progressBar');
+        const levelUpScreen = document.getElementById('levelUp');
+        const nextLevelElement = document.getElementById('nextLevel');
         const startBtn = document.getElementById('startBtn');
         
         // Variáveis do jogo
-        let tiles = [];
-        let emptyIndex = 8; // Índice do espaço vazio (0-8)
-        let moves = 0;
-        let seconds = 0;
+        let score = 0;
+        let level = 1;
+        let timeLeft = 60;
         let gameActive = false;
         let gameTimer;
-        let bestTime = localStorage.getItem('puzzleBestTime') || null;
-        
-        // Estado resolvido do quebra-cabeça
-        const solvedState = [1, 2, 3, 4, 5, 6, 7, 8, 0];
+        let targetNumber;
+        let numbersToFind = [];
+        let numbersFound = 0;
+        let totalNumbers = 3;
         
         // Inicializar o jogo
         function init() {
-            createTiles();
-            updateBestTimeDisplay();
-            // Não embaralhar automaticamente - o jogador decide quando começar
+            createGameBoard();
+            updateDisplay();
         }
         
-        // Criar as peças do quebra-cabeça
-        function createTiles() {
-            puzzleContainer.innerHTML = '';
-            tiles = [];
+        // Criar o tabuleiro do jogo
+        function createGameBoard() {
+            gameBoard.innerHTML = '';
             
-            for (let i = 0; i < 9; i++) {
-                const tile = document.createElement('div');
-                
-                if (i === emptyIndex) {
-                    tile.className = 'tile empty';
-                    tile.textContent = '';
-                } else {
-                    tile.className = 'tile';
-                    tile.textContent = i + 1;
-                    tile.addEventListener('click', () => moveTile(i));
-                }
-                
-                puzzleContainer.appendChild(tile);
-                tiles.push(tile);
+            // Gerar números aleatórios para o tabuleiro
+            const numbers = [];
+            const boardSize = level <= 3 ? 20 : 25;
+            
+            // Adicionar números aleatórios
+            for (let i = 0; i < boardSize; i++) {
+                numbers.push(Math.floor(Math.random() * 50) + 1);
             }
+            
+            // Criar células
+            numbers.forEach((number, index) => {
+                const cell = document.createElement('div');
+                cell.className = 'number-cell';
+                cell.textContent = number;
+                cell.addEventListener('click', () => checkNumber(number, cell));
+                gameBoard.appendChild(cell);
+            });
         }
         
         // Iniciar o jogo
         function startGame() {
             if (gameActive) return;
             
-            shufflePuzzle();
             gameActive = true;
             startBtn.disabled = true;
-            startBtn.innerHTML = '<span>Jogo em Andamento</span>';
+            startBtn.textContent = 'Jogo em Andamento';
             
-            // Reiniciar contadores
-            moves = 0;
-            seconds = 0;
-            movesElement.textContent = moves;
-            timeElement.textContent = seconds;
+            // Configurar nível
+            setupLevel();
             
             // Iniciar timer
-            clearInterval(gameTimer);
+            timeLeft = 60 - (level * 5);
+            if (timeLeft < 20) timeLeft = 20;
+            
+            updateDisplay();
+            
             gameTimer = setInterval(() => {
-                seconds++;
-                timeElement.textContent = seconds;
+                timeLeft--;
+                updateDisplay();
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
             }, 1000);
         }
         
-        // Embaralhar o quebra-cabeça
-        function shufflePuzzle() {
-            if (!gameActive) {
-                gameActive = true;
-                startBtn.disabled = true;
-                startBtn.innerHTML = '<span>Jogo em Andamento</span>';
-                
-                // Iniciar timer
-                clearInterval(gameTimer);
-                gameTimer = setInterval(() => {
-                    seconds++;
-                    timeElement.textContent = seconds;
-                }, 1000);
+        // Configurar nível
+        function setupLevel() {
+            numbersFound = 0;
+            totalNumbers = 2 + level;
+            
+            // Gerar números alvo
+            numbersToFind = [];
+            for (let i = 0; i < totalNumbers; i++) {
+                numbersToFind.push(Math.floor(Math.random() * 50) + 1);
             }
             
-            // Realizar movimentos aleatórios válidos para embaralhar
-            let shuffleMoves = 100;
-            let lastEmptyIndex = emptyIndex;
+            targetNumber = numbersToFind[0];
+            targetNumberElement.textContent = targetNumber;
             
-            const shuffleInterval = setInterval(() => {
-                const possibleMoves = getPossibleMoves(lastEmptyIndex);
-                const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+            // Atualizar progresso
+            updateProgress();
+            
+            // Recriar tabuleiro com os números alvo incluídos
+            createGameBoardWithTargets();
+        }
+        
+        // Criar tabuleiro com números alvo
+        function createGameBoardWithTargets() {
+            gameBoard.innerHTML = '';
+            
+            const numbers = [];
+            const boardSize = level <= 3 ? 20 : 25;
+            
+            // Adicionar números aleatórios
+            for (let i = 0; i < boardSize - totalNumbers; i++) {
+                let randomNum;
+                do {
+                    randomNum = Math.floor(Math.random() * 50) + 1;
+                } while (numbersToFind.includes(randomNum));
+                numbers.push(randomNum);
+            }
+            
+            // Adicionar números alvo
+            numbers.push(...numbersToFind);
+            
+            // Embaralhar números
+            shuffleArray(numbers);
+            
+            // Criar células
+            numbers.forEach((number, index) => {
+                const cell = document.createElement('div');
+                cell.className = 'number-cell';
+                cell.textContent = number;
+                cell.addEventListener('click', () => checkNumber(number, cell));
+                gameBoard.appendChild(cell);
+            });
+        }
+        
+        // Verificar número clicado
+        function checkNumber(number, cell) {
+            if (!gameActive || cell.classList.contains('found')) return;
+            
+            if (number === targetNumber) {
+                // Número correto
+                cell.classList.add('found');
+                numbersFound++;
                 
-                // Simular clique na peça
-                moveTile(randomMove, true);
+                // Atualizar pontuação
+                score += 10 * level;
+                scoreElement.textContent = score;
                 
-                shuffleMoves--;
-                if (shuffleMoves <= 0) {
-                    clearInterval(shuffleInterval);
-                    // Reiniciar contadores após embaralhar
-                    moves = 0;
-                    seconds = 0;
-                    movesElement.textContent = moves;
-                    timeElement.textContent = seconds;
+                // Atualizar progresso
+                updateProgress();
+                
+                // Verificar se completou o nível
+                if (numbersFound >= totalNumbers) {
+                    completeLevel();
+                } else {
+                    // Próximo número alvo
+                    targetNumber = numbersToFind[numbersFound];
+                    targetNumberElement.textContent = targetNumber;
                 }
-                
-                lastEmptyIndex = emptyIndex;
-            }, 10);
-        }
-        
-        // Mover uma peça
-        function moveTile(index, isShuffling = false) {
-            if (!gameActive && !isShuffling) return;
-            
-            // Verificar se a peça pode ser movida (deve estar adjacente ao espaço vazio)
-            if (isAdjacent(index, emptyIndex)) {
-                // Trocar a peça com o espaço vazio
-                const tempText = tiles[index].textContent;
-                const tempClass = tiles[index].className;
-                
-                tiles[index].textContent = '';
-                tiles[index].className = 'tile empty';
-                tiles[index].removeEventListener('click', () => moveTile(index));
-                
-                tiles[emptyIndex].textContent = tempText;
-                tiles[emptyIndex].className = 'tile';
-                tiles[emptyIndex].addEventListener('click', () => moveTile(emptyIndex));
-                
-                // Atualizar o índice do espaço vazio
-                emptyIndex = index;
-                
-                if (!isShuffling) {
-                    // Atualizar contador de movimentos
-                    moves++;
-                    movesElement.textContent = moves;
-                    
-                    // Verificar se o jogo foi resolvido
-                    if (isPuzzleSolved()) {
-                        endGame();
-                    }
-                }
-            }
-        }
-        
-        // Verificar se duas peças são adjacentes
-        function isAdjacent(index1, index2) {
-            const row1 = Math.floor(index1 / 3);
-            const col1 = index1 % 3;
-            const row2 = Math.floor(index2 / 3);
-            const col2 = index2 % 3;
-            
-            return (Math.abs(row1 - row2) === 1 && col1 === col2) || 
-                   (Math.abs(col1 - col2) === 1 && row1 === row2);
-        }
-        
-        // Obter movimentos possíveis a partir de uma posição
-        function getPossibleMoves(index) {
-            const moves = [];
-            const row = Math.floor(index / 3);
-            const col = index % 3;
-            
-            // Verificar acima
-            if (row > 0) moves.push(index - 3);
-            // Verificar abaixo
-            if (row < 2) moves.push(index + 3);
-            // Verificar esquerda
-            if (col > 0) moves.push(index - 1);
-            // Verificar direita
-            if (col < 2) moves.push(index + 1);
-            
-            return moves;
-        }
-        
-        // Verificar se o quebra-cabeça foi resolvido
-        function isPuzzleSolved() {
-            for (let i = 0; i < 8; i++) {
-                if (tiles[i].textContent !== (i + 1).toString()) {
-                    return false;
-                }
-            }
-            return tiles[8].className.includes('empty');
-        }
-        
-        // Finalizar o jogo
-        function endGame() {
-            gameActive = false;
-            clearInterval(gameTimer);
-            
-            // Atualizar melhor tempo, se aplicável
-            if (bestTime === null || seconds < bestTime) {
-                bestTime = seconds;
-                localStorage.setItem('puzzleBestTime', bestTime);
-                updateBestTimeDisplay();
-            }
-            
-            // Mostrar mensagem de vitória
-            finalTimeElement.textContent = seconds;
-            finalMovesElement.textContent = moves;
-            victoryMessage.style.display = 'flex';
-            
-            // Criar efeito de confete
-            createConfetti();
-            
-            startBtn.disabled = false;
-            startBtn.innerHTML = '<span>Iniciar Jogo</span>';
-        }
-        
-        // Criar efeito de confete
-        function createConfetti() {
-            const colors = ['#ffeb3b', '#4ecdc4', '#ff6b6b', '#6b5b95', '#88d8b0'];
-            
-            for (let i = 0; i < 100; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.animation = `confettiFall ${Math.random() * 3 + 2}s linear forwards`;
-                confetti.style.width = Math.random() * 10 + 5 + 'px';
-                confetti.style.height = Math.random() * 10 + 5 + 'px';
-                
-                document.body.appendChild(confetti);
-                
-                // Remover confete após a animação
+            } else {
+                // Número errado
+                cell.classList.add('wrong');
                 setTimeout(() => {
-                    confetti.remove();
-                }, 5000);
+                    cell.classList.remove('wrong');
+                }, 500);
+                
+                // Penalidade de tempo
+                timeLeft = Math.max(1, timeLeft - 2);
             }
         }
         
-        // Jogar novamente
-        function playAgain() {
-            victoryMessage.style.display = 'none';
+        // Atualizar barra de progresso
+        function updateProgress() {
+            const progress = (numbersFound / totalNumbers) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+        
+        // Completar nível
+        function completeLevel() {
+            clearInterval(gameTimer);
+            gameActive = false;
+            
+            // Bônus por tempo restante
+            const timeBonus = timeLeft * level;
+            score += timeBonus;
+            scoreElement.textContent = score;
+            
+            // Mostrar tela de nível completo
+            nextLevelElement.textContent = level + 1;
+            levelUpScreen.style.display = 'flex';
+        }
+        
+        // Próximo nível
+        function nextLevel() {
+            levelUpScreen.style.display = 'none';
+            level++;
+            levelElement.textContent = level;
+            startGame();
+        }
+        
+        // Finalizar jogo
+        function endGame() {
+            clearInterval(gameTimer);
+            gameActive = false;
+            alert(`Fim de jogo! Sua pontuação final: ${score}`);
             resetGame();
         }
         
-        // Reiniciar o jogo
+        // Reiniciar jogo
         function resetGame() {
-            gameActive = false;
             clearInterval(gameTimer);
-            moves = 0;
-            seconds = 0;
-            movesElement.textContent = moves;
-            timeElement.textContent = seconds;
-            emptyIndex = 8;
-            createTiles();
+            gameActive = false;
+            score = 0;
+            level = 1;
+            timeLeft = 60;
             
+            scoreElement.textContent = score;
+            levelElement.textContent = level;
+            timeElement.textContent = timeLeft;
+            progressBar.style.width = '0%';
+            
+            createGameBoard();
             startBtn.disabled = false;
-            startBtn.innerHTML = '<span>Iniciar Jogo</span>';
+            startBtn.textContent = 'Iniciar Jogo';
         }
         
-        // Mostrar solução (apenas para demonstração)
-        function showSolution() {
+        // Mostrar dica
+        function showHint() {
             if (!gameActive) return;
             
-            // Para uma implementação real, isso resolveria o quebra-cabeça
-            // Por simplicidade, vamos apenas mostrar uma mensagem
-            alert("Tente mover as peças nesta ordem:\n\n1. Mova o 3 para a direita\n2. Mova o 6 para baixo\n3. Mova o 5 para a esquerda\n4. Continue até ordenar todos os números!");
+            // Encontrar uma célula com o número alvo e destacá-la
+            const cells = document.querySelectorAll('.number-cell');
+            let found = false;
+            
+            cells.forEach(cell => {
+                if (parseInt(cell.textContent) === targetNumber && !cell.classList.contains('found')) {
+                    cell.style.backgroundColor = '#ffeb3b';
+                    cell.style.color = '#1a237e';
+                    setTimeout(() => {
+                        cell.style.backgroundColor = '';
+                        cell.style.color = 'white';
+                    }, 1000);
+                    found = true;
+                }
+            });
+            
+            if (!found) {
+                alert('Número alvo não encontrado no tabuleiro!');
+            }
+            
+            // Penalidade por usar dica
+            timeLeft = Math.max(1, timeLeft - 5);
         }
         
-        // Atualizar exibição do melhor tempo
-        function updateBestTimeDisplay() {
-            if (bestTime !== null) {
-                bestElement.textContent = bestTime;
-            } else {
-                bestElement.textContent = '-';
+        // Atualizar display
+        function updateDisplay() {
+            timeElement.textContent = timeLeft;
+        }
+        
+        // Embaralhar array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
             }
+            return array;
         }
         
         // Inicializar o jogo quando a página carregar
