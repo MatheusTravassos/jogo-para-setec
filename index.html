@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nave Espacial - Compacto</title>
+    <title>Quebra-Cabeça Deslizante</title>
     <style>
         * {
             margin: 0;
@@ -13,18 +13,17 @@
         }
         
         body {
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #fff;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 15px;
-            overflow-x: hidden;
+            padding: 20px;
         }
         
         .container {
-            max-width: 600px;
+            max-width: 500px;
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -33,143 +32,150 @@
         
         header {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             width: 100%;
         }
         
         h1 {
-            font-size: 2rem;
-            margin-bottom: 5px;
-            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
-            color: #ffffff;
-            letter-spacing: 1px;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
         
         .subtitle {
-            font-size: 0.9rem;
-            margin-bottom: 15px;
-            color: #a0a0ff;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: #e0e0ff;
         }
         
-        .game-stats {
+        .game-info {
             display: flex;
             justify-content: space-between;
             width: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border: 1px solid #00ffff;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        .stat {
+        .info-item {
             text-align: center;
         }
         
-        .stat-value {
-            font-size: 1.5rem;
+        .info-value {
+            font-size: 1.8rem;
             font-weight: bold;
-            color: #00ffff;
+            color: #ffeb3b;
         }
         
-        .stat-label {
-            font-size: 0.7rem;
-            color: #a0a0ff;
+        .info-label {
+            font-size: 0.9rem;
+            color: #e0e0ff;
         }
         
-        .game-container {
-            position: relative;
-            width: 100%;
-            height: 300px; /* Área menor */
-            background: #000;
-            border: 2px solid #00ffff;
+        .puzzle-container {
+            width: 300px;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 5px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .tile {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
-            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            user-select: none;
         }
         
-        .player {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 10 L70 50 L50 70 L30 50 Z" fill="%2300ffff"/><circle cx="50" cy="50" r="10" fill="%23007070"/></svg>') no-repeat center;
-            background-size: contain;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
+        .tile:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         }
         
-        .enemy {
-            position: absolute;
-            width: 25px;
-            height: 25px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,10 70,40 50,70 30,40" fill="%23ff0000"/><circle cx="50" cy="40" r="15" fill="%23700000"/></svg>') no-repeat center;
-            background-size: contain;
-            top: -25px;
-            z-index: 5;
+        .empty {
+            background: transparent;
+            box-shadow: none;
+            cursor: default;
         }
         
-        .bullet {
-            position: absolute;
-            width: 4px;
-            height: 12px;
-            background: #ffff00;
-            border-radius: 2px;
-            z-index: 8;
+        .empty:hover {
+            transform: none;
+            box-shadow: none;
         }
         
         .controls {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 15px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
             justify-content: center;
         }
         
         button {
-            background: linear-gradient(to bottom, #00aaff, #0066cc);
+            background: linear-gradient(to bottom, #ff6b6b, #ee5a52);
             color: white;
             border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
         }
         
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.4);
-            background: linear-gradient(to bottom, #00ccff, #0088ff);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to bottom, #ff7b7b, #ff6b6b);
         }
         
         button:active {
             transform: translateY(1px);
         }
         
+        button.secondary {
+            background: linear-gradient(to bottom, #4ecdc4, #44a08d);
+        }
+        
+        button.secondary:hover {
+            background: linear-gradient(to bottom, #5eddd4, #4ecdc4);
+        }
+        
         .instructions {
-            background: rgba(0, 0, 0, 0.6);
-            padding: 15px;
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
             width: 100%;
-            margin-top: 15px;
-            border: 1px solid #4444ff;
-            font-size: 0.85rem;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .instructions h2 {
-            color: #00ffff;
-            margin-bottom: 8px;
+            color: #ffeb3b;
+            margin-bottom: 10px;
             text-align: center;
-            font-size: 1.1rem;
         }
         
         .instructions ul {
@@ -178,21 +184,21 @@
         }
         
         .instructions li {
-            margin-bottom: 6px;
-            padding-left: 15px;
+            margin-bottom: 8px;
+            padding-left: 20px;
             position: relative;
         }
         
         .instructions li:before {
-            content: "▶";
-            color: #00ffff;
+            content: "✓";
+            color: #4ecdc4;
             position: absolute;
             left: 0;
-            font-size: 0.7rem;
+            font-weight: bold;
         }
         
-        .game-over {
-            position: absolute;
+        .victory-message {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -206,41 +212,48 @@
             display: none;
         }
         
-        .game-over h2 {
-            font-size: 2rem;
-            color: #ff0000;
-            margin-bottom: 15px;
-            text-shadow: 0 0 10px #ff0000;
-        }
-        
-        .game-over p {
-            font-size: 1.2rem;
+        .victory-message h2 {
+            font-size: 3rem;
+            color: #4ecdc4;
             margin-bottom: 20px;
-            color: #ffffff;
+            text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
         }
         
-        .power-up {
+        .victory-message p {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: #ffffff;
+            text-align: center;
+        }
+        
+        .confetti {
             position: absolute;
-            width: 18px;
-            height: 18px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%2300ff00"/><text x="50" y="60" font-size="40" text-anchor="middle" fill="white">+</text></svg>') no-repeat center;
-            background-size: contain;
-            z-index: 7;
+            width: 10px;
+            height: 10px;
+            background: #ffeb3b;
+            border-radius: 50%;
+            opacity: 0;
+        }
+        
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(1000px) rotate(360deg);
+                opacity: 0;
+            }
         }
         
         @media (max-width: 500px) {
             h1 {
-                font-size: 1.7rem;
+                font-size: 2rem;
             }
             
-            .game-stats {
-                flex-wrap: wrap;
-                gap: 5px;
-            }
-            
-            .stat {
-                flex: 1;
-                min-width: 45%;
+            .puzzle-container {
+                width: 280px;
+                height: 280px;
             }
             
             .controls {
@@ -258,434 +271,333 @@
 <body>
     <div class="container">
         <header>
-            <h1>NAVE ESPACIAL</h1>
-            <p class="subtitle">Versão Compacta - Desvie dos asteroides!</p>
+            <h1>Quebra-Cabeça</h1>
+            <p class="subtitle">Deslize as peças para ordenar os números</p>
         </header>
         
-        <div class="game-stats">
-            <div class="stat">
-                <div class="stat-value" id="score">0</div>
-                <div class="stat-label">PONTOS</div>
+        <div class="game-info">
+            <div class="info-item">
+                <div class="info-value" id="moves">0</div>
+                <div class="info-label">MOVIMENTOS</div>
             </div>
-            <div class="stat">
-                <div class="stat-value" id="lives">3</div>
-                <div class="stat-label">VIDAS</div>
+            <div class="info-item">
+                <div class="info-value" id="time">0</div>
+                <div class="info-label">SEGUNDOS</div>
             </div>
-            <div class="stat">
-                <div class="stat-value" id="level">1</div>
-                <div class="stat-label">NÍVEL</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value" id="highScore">0</div>
-                <div class="stat-label">RECORDE</div>
+            <div class="info-item">
+                <div class="info-value" id="best">-</div>
+                <div class="info-label">MELHOR TEMPO</div>
             </div>
         </div>
         
-        <div class="game-container">
-            <div id="player" class="player"></div>
-            <div class="game-over" id="gameOver">
-                <h2>FIM DE JOGO!</h2>
-                <p>Pontuação: <span id="finalScore">0</span></p>
-                <button onclick="restartGame()">
-                    <span>JOGAR NOVAMENTE</span>
-                </button>
-            </div>
+        <div class="puzzle-container" id="puzzle">
+            <!-- As peças serão geradas pelo JavaScript -->
         </div>
         
         <div class="controls">
-            <button onclick="moveLeft()">
-                <span>← ESQUERDA</span>
+            <button onclick="shufflePuzzle()">
+                <span>Embaralhar</span>
             </button>
             <button onclick="startGame()" id="startBtn">
-                <span>INICIAR JOGO</span>
+                <span>Iniciar Jogo</span>
             </button>
-            <button onclick="shoot()">
-                <span>ATIRAR ↑</span>
+            <button class="secondary" onclick="showSolution()">
+                <span>Ver Solução</span>
             </button>
-            <button onclick="moveRight()">
-                <span>DIREITA →</span>
+            <button class="secondary" onclick="resetGame()">
+                <span>Reiniciar</span>
             </button>
         </div>
         
         <div class="instructions">
             <h2>COMO JOGAR</h2>
             <ul>
-                <li>Botões ESQUERDA/DIREITA para mover</li>
-                <li>Botão ATIRAR para destruir asteroides</li>
-                <li>Desvie dos vermelhos, colete os verdes</li>
-                <li>Cada nível fica mais difícil</li>
+                <li>Clique em uma peça ao lado do espaço vazio para movê-la</li>
+                <li>Ordene os números de 1 a 8 da esquerda para a direita</li>
+                <li>O espaço vazio deve ficar no canto inferior direito</li>
+                <li>Tente completar no menor tempo e com menos movimentos</li>
             </ul>
+        </div>
+        
+        <div class="victory-message" id="victoryMessage">
+            <h2>PARABÉNS!</h2>
+            <p>Você completou o quebra-cabeça em <span id="finalTime">0</span> segundos<br>e <span id="finalMoves">0</span> movimentos!</p>
+            <button onclick="playAgain()">
+                <span>Jogar Novamente</span>
+            </button>
         </div>
     </div>
 
     <script>
         // Elementos do jogo
-        const player = document.getElementById('player');
-        const gameContainer = document.querySelector('.game-container');
-        const scoreElement = document.getElementById('score');
-        const livesElement = document.getElementById('lives');
-        const levelElement = document.getElementById('level');
-        const highScoreElement = document.getElementById('highScore');
-        const gameOverScreen = document.getElementById('gameOver');
-        const finalScoreElement = document.getElementById('finalScore');
+        const puzzleContainer = document.getElementById('puzzle');
+        const movesElement = document.getElementById('moves');
+        const timeElement = document.getElementById('time');
+        const bestElement = document.getElementById('best');
+        const victoryMessage = document.getElementById('victoryMessage');
+        const finalTimeElement = document.getElementById('finalTime');
+        const finalMovesElement = document.getElementById('finalMoves');
         const startBtn = document.getElementById('startBtn');
         
         // Variáveis do jogo
+        let tiles = [];
+        let emptyIndex = 8; // Índice do espaço vazio (0-8)
+        let moves = 0;
+        let seconds = 0;
         let gameActive = false;
-        let score = 0;
-        let lives = 3;
-        let level = 1;
-        let highScore = localStorage.getItem('highScore') || 0;
-        let playerPosition = 50; // porcentagem
-        let enemies = [];
-        let bullets = [];
-        let powerUps = [];
-        let enemySpeed = 2;
-        let enemySpawnRate = 1000; // ms
-        let powerUpSpawnRate = 5000; // ms
-        let gameInterval;
-        let enemyInterval;
-        let powerUpInterval;
+        let gameTimer;
+        let bestTime = localStorage.getItem('puzzleBestTime') || null;
+        
+        // Estado resolvido do quebra-cabeça
+        const solvedState = [1, 2, 3, 4, 5, 6, 7, 8, 0];
         
         // Inicializar o jogo
         function init() {
-            highScoreElement.textContent = highScore;
-            document.addEventListener('keydown', handleKeyPress);
+            createTiles();
+            updateBestTimeDisplay();
+            // Não embaralhar automaticamente - o jogador decide quando começar
+        }
+        
+        // Criar as peças do quebra-cabeça
+        function createTiles() {
+            puzzleContainer.innerHTML = '';
+            tiles = [];
+            
+            for (let i = 0; i < 9; i++) {
+                const tile = document.createElement('div');
+                
+                if (i === emptyIndex) {
+                    tile.className = 'tile empty';
+                    tile.textContent = '';
+                } else {
+                    tile.className = 'tile';
+                    tile.textContent = i + 1;
+                    tile.addEventListener('click', () => moveTile(i));
+                }
+                
+                puzzleContainer.appendChild(tile);
+                tiles.push(tile);
+            }
         }
         
         // Iniciar o jogo
         function startGame() {
             if (gameActive) return;
             
-            resetGame();
+            shufflePuzzle();
             gameActive = true;
             startBtn.disabled = true;
-            startBtn.innerHTML = '<span>JOGANDO...</span>';
+            startBtn.innerHTML = '<span>Jogo em Andamento</span>';
             
-            // Movimentação contínua dos inimigos
-            gameInterval = setInterval(updateGame, 16); // ~60 FPS
+            // Reiniciar contadores
+            moves = 0;
+            seconds = 0;
+            movesElement.textContent = moves;
+            timeElement.textContent = seconds;
             
-            // Gerar inimigos
-            enemyInterval = setInterval(createEnemy, enemySpawnRate);
+            // Iniciar timer
+            clearInterval(gameTimer);
+            gameTimer = setInterval(() => {
+                seconds++;
+                timeElement.textContent = seconds;
+            }, 1000);
+        }
+        
+        // Embaralhar o quebra-cabeça
+        function shufflePuzzle() {
+            if (!gameActive) {
+                gameActive = true;
+                startBtn.disabled = true;
+                startBtn.innerHTML = '<span>Jogo em Andamento</span>';
+                
+                // Iniciar timer
+                clearInterval(gameTimer);
+                gameTimer = setInterval(() => {
+                    seconds++;
+                    timeElement.textContent = seconds;
+                }, 1000);
+            }
             
-            // Gerar power-ups
-            powerUpInterval = setInterval(createPowerUp, powerUpSpawnRate);
+            // Realizar movimentos aleatórios válidos para embaralhar
+            let shuffleMoves = 100;
+            let lastEmptyIndex = emptyIndex;
+            
+            const shuffleInterval = setInterval(() => {
+                const possibleMoves = getPossibleMoves(lastEmptyIndex);
+                const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+                
+                // Simular clique na peça
+                moveTile(randomMove, true);
+                
+                shuffleMoves--;
+                if (shuffleMoves <= 0) {
+                    clearInterval(shuffleInterval);
+                    // Reiniciar contadores após embaralhar
+                    moves = 0;
+                    seconds = 0;
+                    movesElement.textContent = moves;
+                    timeElement.textContent = seconds;
+                }
+                
+                lastEmptyIndex = emptyIndex;
+            }, 10);
+        }
+        
+        // Mover uma peça
+        function moveTile(index, isShuffling = false) {
+            if (!gameActive && !isShuffling) return;
+            
+            // Verificar se a peça pode ser movida (deve estar adjacente ao espaço vazio)
+            if (isAdjacent(index, emptyIndex)) {
+                // Trocar a peça com o espaço vazio
+                const tempText = tiles[index].textContent;
+                const tempClass = tiles[index].className;
+                
+                tiles[index].textContent = '';
+                tiles[index].className = 'tile empty';
+                tiles[index].removeEventListener('click', () => moveTile(index));
+                
+                tiles[emptyIndex].textContent = tempText;
+                tiles[emptyIndex].className = 'tile';
+                tiles[emptyIndex].addEventListener('click', () => moveTile(emptyIndex));
+                
+                // Atualizar o índice do espaço vazio
+                emptyIndex = index;
+                
+                if (!isShuffling) {
+                    // Atualizar contador de movimentos
+                    moves++;
+                    movesElement.textContent = moves;
+                    
+                    // Verificar se o jogo foi resolvido
+                    if (isPuzzleSolved()) {
+                        endGame();
+                    }
+                }
+            }
+        }
+        
+        // Verificar se duas peças são adjacentes
+        function isAdjacent(index1, index2) {
+            const row1 = Math.floor(index1 / 3);
+            const col1 = index1 % 3;
+            const row2 = Math.floor(index2 / 3);
+            const col2 = index2 % 3;
+            
+            return (Math.abs(row1 - row2) === 1 && col1 === col2) || 
+                   (Math.abs(col1 - col2) === 1 && row1 === row2);
+        }
+        
+        // Obter movimentos possíveis a partir de uma posição
+        function getPossibleMoves(index) {
+            const moves = [];
+            const row = Math.floor(index / 3);
+            const col = index % 3;
+            
+            // Verificar acima
+            if (row > 0) moves.push(index - 3);
+            // Verificar abaixo
+            if (row < 2) moves.push(index + 3);
+            // Verificar esquerda
+            if (col > 0) moves.push(index - 1);
+            // Verificar direita
+            if (col < 2) moves.push(index + 1);
+            
+            return moves;
+        }
+        
+        // Verificar se o quebra-cabeça foi resolvido
+        function isPuzzleSolved() {
+            for (let i = 0; i < 8; i++) {
+                if (tiles[i].textContent !== (i + 1).toString()) {
+                    return false;
+                }
+            }
+            return tiles[8].className.includes('empty');
+        }
+        
+        // Finalizar o jogo
+        function endGame() {
+            gameActive = false;
+            clearInterval(gameTimer);
+            
+            // Atualizar melhor tempo, se aplicável
+            if (bestTime === null || seconds < bestTime) {
+                bestTime = seconds;
+                localStorage.setItem('puzzleBestTime', bestTime);
+                updateBestTimeDisplay();
+            }
+            
+            // Mostrar mensagem de vitória
+            finalTimeElement.textContent = seconds;
+            finalMovesElement.textContent = moves;
+            victoryMessage.style.display = 'flex';
+            
+            // Criar efeito de confete
+            createConfetti();
+            
+            startBtn.disabled = false;
+            startBtn.innerHTML = '<span>Iniciar Jogo</span>';
+        }
+        
+        // Criar efeito de confete
+        function createConfetti() {
+            const colors = ['#ffeb3b', '#4ecdc4', '#ff6b6b', '#6b5b95', '#88d8b0'];
+            
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animation = `confettiFall ${Math.random() * 3 + 2}s linear forwards`;
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                
+                document.body.appendChild(confetti);
+                
+                // Remover confete após a animação
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+        
+        // Jogar novamente
+        function playAgain() {
+            victoryMessage.style.display = 'none';
+            resetGame();
         }
         
         // Reiniciar o jogo
-        function restartGame() {
-            gameOverScreen.style.display = 'none';
-            clearIntervals();
-            startGame();
-        }
-        
-        // Resetar variáveis do jogo
         function resetGame() {
-            score = 0;
-            lives = 3;
-            level = 1;
-            enemySpeed = 2;
-            enemySpawnRate = 1000;
-            playerPosition = 50;
-            
-            updatePlayerPosition();
-            updateStats();
-            
-            // Remover todos os inimigos, balas e power-ups
-            enemies.forEach(enemy => enemy.remove());
-            bullets.forEach(bullet => bullet.remove());
-            powerUps.forEach(powerUp => powerUp.remove());
-            
-            enemies = [];
-            bullets = [];
-            powerUps = [];
-        }
-        
-        // Atualizar o jogo a cada frame
-        function updateGame() {
-            moveEnemies();
-            moveBullets();
-            movePowerUps();
-            checkCollisions();
-        }
-        
-        // Criar um inimigo
-        function createEnemy() {
-            const enemy = document.createElement('div');
-            enemy.className = 'enemy';
-            
-            // Posição aleatória
-            const leftPosition = Math.random() * 90 + 5; // 5% a 95%
-            enemy.style.left = `${leftPosition}%`;
-            
-            gameContainer.appendChild(enemy);
-            enemies.push({
-                element: enemy,
-                left: leftPosition,
-                top: -25
-            });
-        }
-        
-        // Criar um power-up
-        function createPowerUp() {
-            const powerUp = document.createElement('div');
-            powerUp.className = 'power-up';
-            
-            // Posição aleatória
-            const leftPosition = Math.random() * 90 + 5; // 5% a 95%
-            powerUp.style.left = `${leftPosition}%`;
-            powerUp.style.top = '-18px';
-            
-            gameContainer.appendChild(powerUp);
-            powerUps.push({
-                element: powerUp,
-                left: leftPosition,
-                top: -18
-            });
-        }
-        
-        // Mover inimigos
-        function moveEnemies() {
-            for (let i = enemies.length - 1; i >= 0; i--) {
-                const enemy = enemies[i];
-                enemy.top += enemySpeed;
-                enemy.element.style.top = `${enemy.top}px`;
-                
-                // Remover inimigos que saíram da tela
-                if (enemy.top > gameContainer.offsetHeight) {
-                    enemy.element.remove();
-                    enemies.splice(i, 1);
-                }
-            }
-        }
-        
-        // Mover power-ups
-        function movePowerUps() {
-            for (let i = powerUps.length - 1; i >= 0; i--) {
-                const powerUp = powerUps[i];
-                powerUp.top += enemySpeed * 0.7; // Mais lento que os inimigos
-                powerUp.element.style.top = `${powerUp.top}px`;
-                
-                // Remover power-ups que saíram da tela
-                if (powerUp.top > gameContainer.offsetHeight) {
-                    powerUp.element.remove();
-                    powerUps.splice(i, 1);
-                }
-            }
-        }
-        
-        // Mover balas
-        function moveBullets() {
-            for (let i = bullets.length - 1; i >= 0; i--) {
-                const bullet = bullets[i];
-                bullet.top -= 5;
-                bullet.element.style.top = `${bullet.top}px`;
-                
-                // Remover balas que saíram da tela
-                if (bullet.top < -15) {
-                    bullet.element.remove();
-                    bullets.splice(i, 1);
-                }
-            }
-        }
-        
-        // Verificar colisões
-        function checkCollisions() {
-            // Colisão entre balas e inimigos
-            for (let i = bullets.length - 1; i >= 0; i--) {
-                const bullet = bullets[i];
-                
-                for (let j = enemies.length - 1; j >= 0; j--) {
-                    const enemy = enemies[j];
-                    
-                    if (isColliding(bullet, enemy)) {
-                        // Colisão detectada
-                        bullet.element.remove();
-                        bullets.splice(i, 1);
-                        
-                        enemy.element.remove();
-                        enemies.splice(j, 1);
-                        
-                        // Pontuação
-                        score += 10;
-                        updateStats();
-                        
-                        break;
-                    }
-                }
-            }
-            
-            // Colisão entre jogador e inimigos
-            for (let i = enemies.length - 1; i >= 0; i--) {
-                const enemy = enemies[i];
-                
-                if (isColliding({left: playerPosition, top: 270, width: 30, height: 30}, enemy)) {
-                    // Colisão detectada
-                    enemy.element.remove();
-                    enemies.splice(i, 1);
-                    
-                    // Perder vida
-                    lives--;
-                    updateStats();
-                    
-                    // Efeito visual de dano
-                    player.style.background = 'red';
-                    setTimeout(() => {
-                        player.style.background = "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 10 L70 50 L50 70 L30 50 Z\" fill=\"%2300ffff\"/><circle cx=\"50\" cy=\"50\" r=\"10\" fill=\"%23007070\"/></svg>') no-repeat center";
-                    }, 200);
-                    
-                    if (lives <= 0) {
-                        gameOver();
-                    }
-                }
-            }
-            
-            // Colisão entre jogador e power-ups
-            for (let i = powerUps.length - 1; i >= 0; i--) {
-                const powerUp = powerUps[i];
-                
-                if (isColliding({left: playerPosition, top: 270, width: 30, height: 30}, powerUp)) {
-                    // Colisão detectada
-                    powerUp.element.remove();
-                    powerUps.splice(i, 1);
-                    
-                    // Ganhar pontos
-                    score += 50;
-                    updateStats();
-                    
-                    // Efeito visual
-                    player.style.background = 'green';
-                    setTimeout(() => {
-                        player.style.background = "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 10 L70 50 L50 70 L30 50 Z\" fill=\"%2300ffff\"/><circle cx=\"50\" cy=\"50\" r=\"10\" fill=\"%23007070\"/></svg>') no-repeat center";
-                    }, 200);
-                }
-            }
-            
-            // Aumentar nível conforme a pontuação
-            const newLevel = Math.floor(score / 100) + 1;
-            if (newLevel > level) {
-                level = newLevel;
-                levelUp();
-            }
-        }
-        
-        // Verificar se dois objetos estão colidindo
-        function isColliding(obj1, obj2) {
-            return (
-                obj1.left < obj2.left + 25 &&
-                obj1.left + 30 > obj2.left &&
-                obj1.top < obj2.top + 25 &&
-                obj1.top + 30 > obj2.top
-            );
-        }
-        
-        // Aumentar nível
-        function levelUp() {
-            levelElement.textContent = level;
-            
-            // Aumentar dificuldade
-            enemySpeed += 0.5;
-            enemySpawnRate = Math.max(300, 1000 - level * 100);
-            
-            // Limpar intervalos antigos e criar novos
-            clearInterval(enemyInterval);
-            enemyInterval = setInterval(createEnemy, enemySpawnRate);
-            
-            // Efeito visual
-            gameContainer.style.borderColor = '#ff00ff';
-            setTimeout(() => {
-                gameContainer.style.borderColor = '#00ffff';
-            }, 500);
-        }
-        
-        // Fim de jogo
-        function gameOver() {
             gameActive = false;
-            clearIntervals();
-            
-            // Atualizar recorde
-            if (score > highScore) {
-                highScore = score;
-                localStorage.setItem('highScore', highScore);
-                highScoreElement.textContent = highScore;
-            }
-            
-            // Mostrar tela de fim de jogo
-            finalScoreElement.textContent = score;
-            gameOverScreen.style.display = 'flex';
+            clearInterval(gameTimer);
+            moves = 0;
+            seconds = 0;
+            movesElement.textContent = moves;
+            timeElement.textContent = seconds;
+            emptyIndex = 8;
+            createTiles();
             
             startBtn.disabled = false;
-            startBtn.innerHTML = '<span>INICIAR JOGO</span>';
+            startBtn.innerHTML = '<span>Iniciar Jogo</span>';
         }
         
-        // Limpar intervalos
-        function clearIntervals() {
-            clearInterval(gameInterval);
-            clearInterval(enemyInterval);
-            clearInterval(powerUpInterval);
-        }
-        
-        // Atualizar estatísticas na tela
-        function updateStats() {
-            scoreElement.textContent = score;
-            livesElement.textContent = lives;
-            levelElement.textContent = level;
-        }
-        
-        // Atirar
-        function shoot() {
+        // Mostrar solução (apenas para demonstração)
+        function showSolution() {
             if (!gameActive) return;
             
-            const bullet = document.createElement('div');
-            bullet.className = 'bullet';
-            bullet.style.left = `${playerPosition + 1.5}%`;
-            bullet.style.top = '270px';
-            
-            gameContainer.appendChild(bullet);
-            bullets.push({
-                element: bullet,
-                left: playerPosition + 1.5,
-                top: 270
-            });
+            // Para uma implementação real, isso resolveria o quebra-cabeça
+            // Por simplicidade, vamos apenas mostrar uma mensagem
+            alert("Tente mover as peças nesta ordem:\n\n1. Mova o 3 para a direita\n2. Mova o 6 para baixo\n3. Mova o 5 para a esquerda\n4. Continue até ordenar todos os números!");
         }
         
-        // Mover para a esquerda
-        function moveLeft() {
-            if (!gameActive) return;
-            
-            playerPosition = Math.max(5, playerPosition - 5);
-            updatePlayerPosition();
-        }
-        
-        // Mover para a direita
-        function moveRight() {
-            if (!gameActive) return;
-            
-            playerPosition = Math.min(95, playerPosition + 5);
-            updatePlayerPosition();
-        }
-        
-        // Atualizar posição do jogador
-        function updatePlayerPosition() {
-            player.style.left = `${playerPosition}%`;
-        }
-        
-        // Manipular pressionamento de teclas
-        function handleKeyPress(e) {
-            if (!gameActive) return;
-            
-            switch(e.key) {
-                case 'ArrowLeft':
-                    moveLeft();
-                    break;
-                case 'ArrowRight':
-                    moveRight();
-                    break;
-                case ' ':
-                case 'ArrowUp':
-                    shoot();
-                    e.preventDefault();
-                    break;
+        // Atualizar exibição do melhor tempo
+        function updateBestTimeDisplay() {
+            if (bestTime !== null) {
+                bestElement.textContent = bestTime;
+            } else {
+                bestElement.textContent = '-';
             }
         }
         
