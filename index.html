@@ -441,9 +441,8 @@
         const difficultyInfo = document.getElementById('difficultyInfo');
         
         // URLs das imagens fornecidas
-        const barbosaFerrazImage1 = '99da37dd-c8cf-4d4d-abb3-22b920d79980.jpeg';
-        const barbosaFerrazImage2 = 'f46bc5dc-6c49-4151-8d5d-1c4a572d663f.jpeg';
-        const setecImage = 'https://via.placeholder.com/100x80/1a237e/4fc3f7?text=SETEC';
+        const barbosaFerrazImage = '99da37dd-c8cf-4d4d-abb3-22b920d79980.jpeg';
+        const setecImage = 'f46bc5dc-6c49-4151-8d5d-1c4a572d663f.jpeg';
 
         // Todas as tecnologias disponíveis (incluindo as imagens)
         const allTechnologies = [
@@ -456,16 +455,9 @@
             { name: "React", icon: "⚛️", description: "Frontend" },
             { name: "Node.js", icon: "🟢", description: "Backend" },
             { 
-                name: "BARBOSA_FERRAZ_1", 
+                name: "BARBOSA_FERRAZ", 
                 type: "image",
-                imageUrl: barbosaFerrazImage1,
-                description: "Colégio Barbosa Ferraz",
-                label: "Barbosa Ferraz"
-            },
-            { 
-                name: "BARBOSA_FERRAZ_2", 
-                type: "image",
-                imageUrl: barbosaFerrazImage2,
+                imageUrl: barbosaFerrazImage,
                 description: "Colégio Barbosa Ferraz",
                 label: "Barbosa Ferraz"
             },
@@ -567,8 +559,8 @@
             // Garantir que as cartas da escola e SETEC sejam sempre incluídas
             let selectedTechs;
             
-            if (totalPairs >= 3) {
-                // Incluir as três cartas de imagem
+            if (totalPairs >= 2) {
+                // Incluir as duas cartas de imagem
                 const imageCards = allTechnologies.filter(tech => 
                     tech.type === "image"
                 );
@@ -577,7 +569,7 @@
                 const otherTechs = allTechnologies
                     .filter(tech => tech.type !== "image")
                     .sort(() => Math.random() - 0.5)
-                    .slice(0, totalPairs - 3);
+                    .slice(0, totalPairs - 2);
                 
                 selectedTechs = [...imageCards, ...otherTechs];
             } else {
