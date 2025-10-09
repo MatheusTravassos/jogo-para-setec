@@ -225,6 +225,12 @@
         .tech-name {
             font-size: 0.7rem;
             font-weight: bold;
+            display: none; /* Esconder por padrão */
+        }
+        
+        .tech-card.selected .tech-name,
+        .tech-card.matched .tech-name {
+            display: block; /* Mostrar apenas quando selecionada ou combinada */
         }
         
         .image-content {
@@ -620,7 +626,6 @@
                 card.innerHTML = `
                     <div class="image-content">
                         <div class="question-mark">?</div>
-                        <div class="tech-name">${tech.name}</div>
                     </div>
                 `;
                 
@@ -702,18 +707,16 @@
                         card1.card.classList.remove('selected');
                         card2.card.classList.remove('selected');
                         
-                        // Restaurar o conteúdo original (ponto de interrogação)
+                        // Restaurar o conteúdo original (apenas ponto de interrogação)
                         card1.card.innerHTML = `
                             <div class="image-content">
                                 <div class="question-mark">?</div>
-                                <div class="tech-name">${gameState.cards[card1.index].name}</div>
                             </div>
                         `;
                         
                         card2.card.innerHTML = `
                             <div class="image-content">
                                 <div class="question-mark">?</div>
-                                <div class="tech-name">${gameState.cards[card2.index].name}</div>
                             </div>
                         `;
                         
