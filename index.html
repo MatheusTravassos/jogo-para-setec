@@ -38,6 +38,38 @@
             padding: 20px;
             border-radius: 15px;
             border: 2px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        .header-image {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: white;
+            padding: 5px;
+        }
+        
+        .header-left {
+            flex: 1;
+            display: flex;
+            justify-content: flex-start;
+        }
+        
+        .header-center {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .header-right {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
         }
         
         .logo {
@@ -302,7 +334,7 @@
             z-index: 20;
             display: none;
             opacity: 0;
-            transition: opacity 1s ease-in-out;
+            transition: opacity 1.5s ease-in-out;
         }
         
         .victory-message.show {
@@ -342,7 +374,7 @@
         .celebration-animation {
             position: absolute;
             font-size: 2rem;
-            animation: celebrate 2s ease-out;
+            animation: celebrate 3s ease-out;
             opacity: 0;
         }
 
@@ -352,16 +384,26 @@
                 opacity: 1;
             }
             50% {
-                transform: translateY(-100px) scale(1.2);
+                transform: translateY(-150px) scale(1.2);
                 opacity: 1;
             }
             100% {
-                transform: translateY(-200px) scale(1.5);
+                transform: translateY(-300px) scale(1.5);
                 opacity: 0;
             }
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .header-image {
+                width: 80px;
+                height: 80px;
+            }
+            
             .game-info {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -389,8 +431,18 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">SETEC</div>
-            <div class="subtitle">Secretaria de Tecnologia - Conexão Tecnológica</div>
+            <div class="header-left">
+                <img src="99da37dd-c8cf-4d4d-abb3-22b920d79980.jpeg" alt="Colégio Barbosa Ferraz" class="header-image" onerror="this.style.display='none'">
+            </div>
+            
+            <div class="header-center">
+                <div class="logo">SETEC</div>
+                <div class="subtitle">Secretaria de Tecnologia - Conexão Tecnológica</div>
+            </div>
+            
+            <div class="header-right">
+                <img src="f46bc5dc-6c49-4151-8d5d-1c4a572d663f.jpeg" alt="SETEC" class="header-image" onerror="this.style.display='none'">
+            </div>
         </div>
         
         <div class="difficulty-selector">
@@ -748,10 +800,10 @@
                 
                 // Verificar vitória
                 if (matchedPairs === totalPairs) {
-                    // Adicionar atraso antes de mostrar a tela de vitória
+                    // Aumentar atraso antes de mostrar a tela de vitória para 3 segundos
                     setTimeout(() => {
                         endGame();
-                    }, 1500); // 1.5 segundos de atraso
+                    }, 3000); // 3 segundos de atraso
                 }
             } else {
                 // Virar as cartas de volta
@@ -870,20 +922,20 @@
         // Criar efeito de celebração
         function createCelebration() {
             const celebrations = ['🎉', '🎊', '⭐', '🏆', '👏', '🎯', '💫', '✨'];
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 25; i++) {
                 setTimeout(() => {
                     const celebration = document.createElement('div');
                     celebration.className = 'celebration-animation';
                     celebration.textContent = celebrations[Math.floor(Math.random() * celebrations.length)];
                     celebration.style.left = Math.random() * 100 + 'vw';
-                    celebration.style.animationDelay = Math.random() * 0.5 + 's';
+                    celebration.style.animationDelay = Math.random() * 1 + 's';
                     document.body.appendChild(celebration);
                     
                     // Remover após animação
                     setTimeout(() => {
                         celebration.remove();
-                    }, 2000);
-                }, i * 100);
+                    }, 3000);
+                }, i * 150);
             }
         }
         
@@ -893,7 +945,7 @@
             setTimeout(() => {
                 victoryMessage.style.display = 'none';
                 resetGame();
-            }, 500);
+            }, 800);
         }
         
         // Reiniciar o jogo
