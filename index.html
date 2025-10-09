@@ -51,15 +51,17 @@
         .subtitle {
             font-size: 1.2rem;
             color: #e3f2fd;
+            margin-bottom: 10px;
         }
         
-        .credits {
-            position: absolute;
-            bottom: 10px;
-            right: 20px;
-            font-size: 0.8rem;
-            color: #e3f2fd;
-            opacity: 0.8;
+        .developer-credits {
+            font-size: 1rem;
+            color: #ffeb3b;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #ffeb3b;
         }
         
         .difficulty-selector {
@@ -272,7 +274,6 @@
             width: 100%;
             margin-top: 20px;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            position: relative;
         }
         
         .instructions h3 {
@@ -337,12 +338,21 @@
         }
 
         .footer-credits {
-            margin-top: 20px;
+            margin-top: 30px;
             text-align: center;
-            color: #e3f2fd;
+            color: #ffeb3b;
+            font-size: 1rem;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid #ffeb3b;
+        }
+
+        .developer-signature {
             font-size: 0.9rem;
-            opacity: 0.8;
-            padding: 10px;
+            color: #4fc3f7;
+            margin-top: 5px;
         }
 
         @media (max-width: 600px) {
@@ -368,10 +378,9 @@
                 font-size: 0.5rem;
             }
             
-            .credits {
-                position: static;
-                margin-top: 10px;
-                text-align: center;
+            .developer-credits {
+                font-size: 0.9rem;
+                padding: 6px 12px;
             }
         }
     </style>
@@ -381,7 +390,7 @@
         <div class="header">
             <div class="logo">SETEC</div>
             <div class="subtitle">Secretaria de Tecnologia - Conexão Tecnológica</div>
-            <div class="credits">Desenvolvido por: Matheus Travassos Lino</div>
+            <div class="developer-credits">🎮 Desenvolvido por: Matheus Travassos Lino 🎮</div>
         </div>
         
         <div class="difficulty-selector">
@@ -442,17 +451,22 @@
         </div>
 
         <div class="footer-credits">
-            Jogo desenvolvido por Matheus Travassos Lino - SETEC 2024
+            <div>JOGO DESENVOLVIDO POR</div>
+            <div class="developer-signature">MATHEUS TRAVASSOS LINO</div>
+            <div style="font-size: 0.8rem; margin-top: 5px; color: #e3f2fd;">SETEC - 2024</div>
         </div>
         
         <div class="victory-message" id="victoryMessage">
-            <h2>PARABÉNS!</h2>
+            <h2>🎉 PARABÉNS! 🎉</h2>
             <p>Você completou o jogo em <span id="finalTime">0</span> segundos!</p>
             <p>Com <span id="finalMoves">0</span> jogadas e <span id="finalHints">0</span> dicas usadas</p>
             <p>Sua pontuação: <span id="finalScore">0</span> pontos</p>
-            <div class="footer-credits" style="margin-top: 20px;">
-                Desenvolvido por Matheus Travassos Lino
+            
+            <div class="footer-credits" style="margin: 20px 0;">
+                <div>DESENVOLVIDO COM 💙 POR</div>
+                <div class="developer-signature">MATHEUS TRAVASSOS LINO</div>
             </div>
+            
             <button onclick="playAgain()">Jogar Novamente</button>
         </div>
     </div>
