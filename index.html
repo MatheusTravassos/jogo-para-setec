@@ -38,6 +38,7 @@
             padding: 20px;
             border-radius: 15px;
             border: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
         }
         
         .logo {
@@ -50,6 +51,15 @@
         .subtitle {
             font-size: 1.2rem;
             color: #e3f2fd;
+        }
+        
+        .credits {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 0.8rem;
+            color: #e3f2fd;
+            opacity: 0.8;
         }
         
         .difficulty-selector {
@@ -262,6 +272,7 @@
             width: 100%;
             margin-top: 20px;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
         }
         
         .instructions h3 {
@@ -325,6 +336,15 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
+        .footer-credits {
+            margin-top: 20px;
+            text-align: center;
+            color: #e3f2fd;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            padding: 10px;
+        }
+
         @media (max-width: 600px) {
             .game-info {
                 grid-template-columns: repeat(2, 1fr);
@@ -347,6 +367,12 @@
             .image-label {
                 font-size: 0.5rem;
             }
+            
+            .credits {
+                position: static;
+                margin-top: 10px;
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -355,6 +381,7 @@
         <div class="header">
             <div class="logo">SETEC</div>
             <div class="subtitle">Secretaria de Tecnologia - Conexão Tecnológica</div>
+            <div class="credits">Desenvolvido por: Matheus Travassos Lino</div>
         </div>
         
         <div class="difficulty-selector">
@@ -413,12 +440,19 @@
                 <li>Tente encontrar todos os pares rapidamente!</li>
             </ul>
         </div>
+
+        <div class="footer-credits">
+            Jogo desenvolvido por Matheus Travassos Lino - SETEC 2024
+        </div>
         
         <div class="victory-message" id="victoryMessage">
             <h2>PARABÉNS!</h2>
             <p>Você completou o jogo em <span id="finalTime">0</span> segundos!</p>
             <p>Com <span id="finalMoves">0</span> jogadas e <span id="finalHints">0</span> dicas usadas</p>
             <p>Sua pontuação: <span id="finalScore">0</span> pontos</p>
+            <div class="footer-credits" style="margin-top: 20px;">
+                Desenvolvido por Matheus Travassos Lino
+            </div>
             <button onclick="playAgain()">Jogar Novamente</button>
         </div>
     </div>
