@@ -1,176 +1,18 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jogo da Memória - SETEC 2025</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #004aad, #00c3ff);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        margin: 0;
-        color: white;
-    }
-
-    h1 {
-        margin-bottom: 20px;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-
-    #game-board {
-        display: grid;
-        grid-template-columns: repeat(4, 100px);
-        grid-gap: 15px;
-        justify-content: center;
-    }
-
-    .card {
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        color: #333;
-        font-weight: bold;
-        cursor: pointer;
-        transition: transform 0.3s, background 0.3s;
-        height: 100px;
-        width: 100px;
-    }
-
-    .card:hover {
-        transform: scale(1.05);
-    }
-
-    .flipped {
-        background: #f0f8ff;
-    }
-
-    .matched {
-        background: #00ff88;
-        color: white;
-        cursor: default;
-    }
-
-    .tech-icon {
-        font-size: 2rem;
-    }
-
-    .school-logo {
-        width: 100%;
-        height: auto;
-        object-fit: contain;
-        max-height: 80px;
-        border-radius: 8px;
-    }
-
-    button {
-        background: #ffffff;
-        color: #004aad;
-        font-weight: bold;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 10px;
-        cursor: pointer;
-        margin-top: 20px;
-        transition: 0.3s;
-    }
-
-    button:hover {
-        background: #004aad;
-        color: white;
-    }
-</style>
-</head>
-<body>
-
-<h1>🎓 Jogo da Memória - SETEC 2025 🎓</h1>
-<div id="game-board"></div>
-<button onclick="startGame()">🔁 Reiniciar</button>
-
-<script>
-const allTechnologies = [
-    { name: "HTML", icon: "🌐", description: "Linguagem de Marcação" },
-    { name: "CSS", icon: "🎨", description: "Estilização" },
-    { name: "JS", icon: "⚡", description: "Programação" },
-    { name: "Python", icon: "🐍", description: "IA e Dados" },
-    { name: "Java", icon: "☕", description: "Enterprise" },
-    { name: "SQL", icon: "🗃️", description: "Banco de Dados" },
-    { name: "React", icon: "⚛️", description: "Frontend" },
-    { name: "Node.js", icon: "🟢", description: "Backend" },
-    { 
-        name: "BARBOSA_FERRAZ", 
-        type: "image",
-        img: "./f09797e0-de28-429b-9f46-c084b245db9f.png", 
-        description: "Colégio Estadual Barbosa Ferraz"
-    },
-    { 
-        name: "SETEC_2025", 
-        type: "image",
-        img: "./903e03cd-b2d1-4b41-a7ee-2d5281ce4c7f.png", 
-        description: "X SETEC 2025"
-    }
-];
-
-let selectedCards = [];
-let lockBoard = false;
-
-function startGame() {
-    const board = document.getElementById("game-board");
-    board.innerHTML = "";
-    let cards = [...allTechnologies, ...allTechnologies]; // duplica para formar pares
-    cards = cards.sort(() => 0.5 - Math.random());
-
-    cards.forEach((tech, index) => {
-        const card = document.createElement("div");
-        card.classList.add("card");
-        card.dataset.name = tech.name;
-        card.dataset.index = index;
-
-        // Mostra interrogação no início
-        card.innerHTML = `
-            <div class="tech-icon">❓</div>
-        `;
-
-        card.addEventListener("click", () => selectCard(card, tech));
-        board.appendChild(card);
-    });
-}
-
-function selectCard(card, tech) {
-    if (lockBoard || card.classList.contains("flipped") || card.classList.contains("matched")) return;
-
-    card.classList.add("flipped");
-
-    // Mostra imagem ou ícone ao virar
-    if (tech.type === "image") {
-        card.innerHTML = `<img src="${tech.img}" alt="${tech.description}" class="school-logo">`;
+        card2.element.classList.add("matched");
     } else {
-        card.innerHTML = `
-            <div class="tech-icon">${tech.icon}</div>
-            <div class="tech-name">${tech.name}</div>
-            <div style="font-size: 0.6rem; margin-top: 3px;">${tech.description}</div>
-        `;
+        // Se não for par, vira novamente as cartas
+        setTimeout(() => {
+            card1.element.classList.remove("flipped");
+            card2.element.classList.remove("flipped");
+            card1.element.innerHTML = `<div class="tech-icon">❓</div>`;
+            card2.element.innerHTML = `<div class="tech-icon">❓</div>`;
+        }, 800);
     }
 
-    selectedCards.push({ element: card, tech });
-
-    if (selectedCards.length === 2) {
-        lockBoard = true;
-        setTimeout(checkMatch, 800);
-    }
+    selectedCards = [];
+    lockBoard = false;
 }
+</script>
 
-function checkMatch() {
-    const [card1, card2] = selectedCards;
-
-    if (card1.tech.name === card2.tech.name) {
-        card1.element.classList.add("matched");
-        card2.element.cl
+</body>
+</html>
