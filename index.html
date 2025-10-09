@@ -209,6 +209,8 @@
             object-fit: contain;
             border-radius: 5px;
             margin-bottom: 5px;
+            background: white;
+            padding: 5px;
         }
         
         .image-label {
@@ -438,42 +440,10 @@
         const hintBtn = document.getElementById('hintBtn');
         const difficultyInfo = document.getElementById('difficultyInfo');
         
-        // SVG das imagens fornecidas
-        const barbosaFerrazImage1 = `
-            <svg width="100" height="80" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
-                <rect width="100" height="80" fill="#f8f9fa"/>
-                <rect x="5" y="5" width="90" height="70" fill="#e9ecef" stroke="#343a40" stroke-width="1"/>
-                <text x="50" y="20" text-anchor="middle" font-family="Arial" font-size="6" fill="#343a40" font-weight="bold">X SETEC1 2025</text>
-                <text x="50" y="30" text-anchor="middle" font-family="Arial" font-size="5" fill="#343a40" font-weight="bold">COLEGIO ESTADUAL</text>
-                <text x="50" y="35" text-anchor="middle" font-family="Arial" font-size="5" fill="#343a40" font-weight="bold">BARBOSA FERRAZ</text>
-                <text x="50" y="45" text-anchor="middle" font-family="Arial" font-size="4" fill="#343a40">DEPARTAMENTO DE HISTÓRIA</text>
-                <text x="50" y="55" text-anchor="middle" font-family="Arial" font-size="4" fill="#343a40">1940/2020</text>
-                <text x="50" y="65" text-anchor="middle" font-family="Arial" font-size="4" fill="#343a40">IVAIPORÃ-PR</text>
-            </svg>
-        `;
-
-        const barbosaFerrazImage2 = `
-            <svg width="100" height="80" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
-                <rect width="100" height="80" fill="#f8f9fa"/>
-                <rect x="5" y="5" width="90" height="70" fill="#e9ecef" stroke="#343a40" stroke-width="1"/>
-                <text x="50" y="25" text-anchor="middle" font-family="Arial" font-size="6" fill="#343a40" font-weight="bold">COLEGIO ESTADUAL</text>
-                <text x="50" y="32" text-anchor="middle" font-family="Arial" font-size="6" fill="#343a40" font-weight="bold">BARBOSA FERRAZ</text>
-                <text x="50" y="45" text-anchor="middle" font-family="Arial" font-size="5" fill="#343a40">Departamento de História</text>
-                <text x="50" y="55" text-anchor="middle" font-family="Arial" font-size="5" fill="#343a40">1960 / 2020</text>
-                <text x="50" y="65" text-anchor="middle" font-family="Arial" font-size="5" fill="#343a40">IVAIPORÃ-PR</text>
-            </svg>
-        `;
-
-        const setecImage = `
-            <svg width="100" height="80" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
-                <rect width="100" height="80" fill="#1a237e"/>
-                <rect x="10" y="10" width="80" height="60" fill="#283593" stroke="#4fc3f7" stroke-width="2"/>
-                <text x="50" y="30" text-anchor="middle" font-family="Arial" font-size="10" fill="#4fc3f7" font-weight="bold">SETEC</text>
-                <text x="50" y="45" text-anchor="middle" font-family="Arial" font-size="5" fill="#e3f2fd">Secretaria de</text>
-                <text x="50" y="52" text-anchor="middle" font-family="Arial" font-size="5" fill="#e3f2fd">Tecnologia</text>
-                <text x="50" y="65" text-anchor="middle" font-family="Arial" font-size="4" fill="#4fc3f7">Conectando o Futuro</text>
-            </svg>
-        `;
+        // URLs das imagens fornecidas
+        const barbosaFerrazImage1 = '99da37dd-c8cf-4d4d-abb3-22b920d79980.jpeg';
+        const barbosaFerrazImage2 = 'f46bc5dc-6c49-4151-8d5d-1c4a572d663f.jpeg';
+        const setecImage = 'https://via.placeholder.com/100x80/1a237e/4fc3f7?text=SETEC';
 
         // Todas as tecnologias disponíveis (incluindo as imagens)
         const allTechnologies = [
@@ -488,21 +458,21 @@
             { 
                 name: "BARBOSA_FERRAZ_1", 
                 type: "image",
-                content: barbosaFerrazImage1,
+                imageUrl: barbosaFerrazImage1,
                 description: "Colégio Barbosa Ferraz",
-                label: "Barbosa Ferraz 1"
+                label: "Barbosa Ferraz"
             },
             { 
                 name: "BARBOSA_FERRAZ_2", 
                 type: "image",
-                content: barbosaFerrazImage2,
+                imageUrl: barbosaFerrazImage2,
                 description: "Colégio Barbosa Ferraz",
-                label: "Barbosa Ferraz 2"
+                label: "Barbosa Ferraz"
             },
             { 
                 name: "SETEC", 
                 type: "image",
-                content: setecImage,
+                imageUrl: setecImage,
                 description: "Secretaria de Tecnologia",
                 label: "SETEC"
             }
@@ -697,7 +667,7 @@
             if (tech.type === "image") {
                 card.innerHTML = `
                     <div class="image-content">
-                        <div class="school-image">${tech.content}</div>
+                        <img src="${tech.imageUrl}" alt="${tech.description}" class="school-image" onerror="this.src='https://via.placeholder.com/100x80/666666/ffffff?text=Imagem+Não+Encontrada'">
                         <div class="image-label">${tech.label}</div>
                     </div>
                 `;
@@ -791,7 +761,7 @@
                         if (card.tech.type === "image") {
                             card.element.innerHTML = `
                                 <div class="image-content">
-                                    <div class="school-image">${card.tech.content}</div>
+                                    <img src="${card.tech.imageUrl}" alt="${card.tech.description}" class="school-image" onerror="this.src='https://via.placeholder.com/100x80/666666/ffffff?text=Imagem+Não+Encontrada'">
                                     <div class="image-label">${card.tech.label}</div>
                                 </div>
                             `;
