@@ -38,7 +38,6 @@
             padding: 20px;
             border-radius: 15px;
             border: 2px solid rgba(255, 255, 255, 0.2);
-            position: relative;
         }
         
         .logo {
@@ -51,17 +50,6 @@
         .subtitle {
             font-size: 1.2rem;
             color: #e3f2fd;
-            margin-bottom: 10px;
-        }
-        
-        .developer-credits {
-            font-size: 1rem;
-            color: #ffeb3b;
-            font-weight: bold;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 8px 15px;
-            border-radius: 20px;
-            border: 1px solid #ffeb3b;
         }
         
         .difficulty-selector {
@@ -313,6 +301,12 @@
             align-items: center;
             z-index: 20;
             display: none;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        
+        .victory-message.show {
+            opacity: 1;
         }
         
         .victory-message h2 {
@@ -340,19 +334,31 @@
         .footer-credits {
             margin-top: 30px;
             text-align: center;
-            color: #ffeb3b;
-            font-size: 1rem;
-            font-weight: bold;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px 20px;
-            border-radius: 20px;
-            border: 1px solid #ffeb3b;
+            color: #e3f2fd;
+            font-size: 0.9rem;
+            opacity: 0.8;
         }
 
-        .developer-signature {
-            font-size: 0.9rem;
-            color: #4fc3f7;
-            margin-top: 5px;
+        .celebration-animation {
+            position: absolute;
+            font-size: 2rem;
+            animation: celebrate 2s ease-out;
+            opacity: 0;
+        }
+
+        @keyframes celebrate {
+            0% {
+                transform: translateY(0) scale(0.5);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-100px) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-200px) scale(1.5);
+                opacity: 0;
+            }
         }
 
         @media (max-width: 600px) {
@@ -377,11 +383,6 @@
             .image-label {
                 font-size: 0.5rem;
             }
-            
-            .developer-credits {
-                font-size: 0.9rem;
-                padding: 6px 12px;
-            }
         }
     </style>
 </head>
@@ -390,7 +391,6 @@
         <div class="header">
             <div class="logo">SETEC</div>
             <div class="subtitle">Secretaria de Tecnologia - Conexão Tecnológica</div>
-            <div class="developer-credits">🎮 Desenvolvido por: Matheus Travassos Lino 🎮</div>
         </div>
         
         <div class="difficulty-selector">
@@ -451,9 +451,7 @@
         </div>
 
         <div class="footer-credits">
-            <div>JOGO DESENVOLVIDO POR</div>
-            <div class="developer-signature">MATHEUS TRAVASSOS LINO</div>
-            <div style="font-size: 0.8rem; margin-top: 5px; color: #e3f2fd;">SETEC - 2024</div>
+            Jogo educativo desenvolvido para SETEC
         </div>
         
         <div class="victory-message" id="victoryMessage">
@@ -461,12 +459,6 @@
             <p>Você completou o jogo em <span id="finalTime">0</span> segundos!</p>
             <p>Com <span id="finalMoves">0</span> jogadas e <span id="finalHints">0</span> dicas usadas</p>
             <p>Sua pontuação: <span id="finalScore">0</span> pontos</p>
-            
-            <div class="footer-credits" style="margin: 20px 0;">
-                <div>DESENVOLVIDO COM 💙 POR</div>
-                <div class="developer-signature">MATHEUS TRAVASSOS LINO</div>
-            </div>
-            
             <button onclick="playAgain()">Jogar Novamente</button>
         </div>
     </div>
@@ -756,7 +748,10 @@
                 
                 // Verificar vitória
                 if (matchedPairs === totalPairs) {
-                    endGame();
+                    // Adicionar atraso antes de mostrar a tela de vitória
+                    setTimeout(() => {
+                        endGame();
+                    }, 1500); // 1.5 segundos de atraso
                 }
             } else {
                 // Virar as cartas de volta
@@ -852,12 +847,19 @@
             gameActive = false;
             clearInterval(gameTimer);
             
-            // Mostrar mensagem de vitória
+            // Criar efeito de celebração
+            createCelebration();
+            
+            // Mostrar mensagem de vitória com transição suave
             finalTimeElement.textContent = gameTime;
             finalMovesElement.textContent = moves;
             finalHintsElement.textContent = hintsUsed;
             finalScoreElement.textContent = score;
+            
             victoryMessage.style.display = 'flex';
+            setTimeout(() => {
+                victoryMessage.classList.add('show');
+            }, 100);
             
             startBtn.disabled = false;
             startBtn.textContent = 'Iniciar Jogo';
@@ -865,10 +867,33 @@
             hintBtn.disabled = true;
         }
         
+        // Criar efeito de celebração
+        function createCelebration() {
+            const celebrations = ['🎉', '🎊', '⭐', '🏆', '👏', '🎯', '💫', '✨'];
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const celebration = document.createElement('div');
+                    celebration.className = 'celebration-animation';
+                    celebration.textContent = celebrations[Math.floor(Math.random() * celebrations.length)];
+                    celebration.style.left = Math.random() * 100 + 'vw';
+                    celebration.style.animationDelay = Math.random() * 0.5 + 's';
+                    document.body.appendChild(celebration);
+                    
+                    // Remover após animação
+                    setTimeout(() => {
+                        celebration.remove();
+                    }, 2000);
+                }, i * 100);
+            }
+        }
+        
         // Jogar novamente
         function playAgain() {
-            victoryMessage.style.display = 'none';
-            resetGame();
+            victoryMessage.classList.remove('show');
+            setTimeout(() => {
+                victoryMessage.style.display = 'none';
+                resetGame();
+            }, 500);
         }
         
         // Reiniciar o jogo
