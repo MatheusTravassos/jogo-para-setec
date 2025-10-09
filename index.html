@@ -1,18 +1,906 @@
-        card2.element.classList.add("matched");
-    } else {
-        // Se não for par, vira novamente as cartas
-        setTimeout(() => {
-            card1.element.classList.remove("flipped");
-            card2.element.classList.remove("flipped");
-            card1.element.innerHTML = `<div class="tech-icon">❓</div>`;
-            card2.element.innerHTML = `<div class="tech-icon">❓</div>`;
-        }, 800);
-    }
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SETEC - Conexão Tecnológica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a237e, #283593, #303f9f);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #4fc3f7;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #e3f2fd;
+        }
+        
+        .difficulty-selector {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .difficulty-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid #4fc3f7;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+        
+        .difficulty-btn:hover {
+            transform: translateY(-3px);
+            background: rgba(79, 195, 247, 0.2);
+        }
+        
+        .difficulty-btn.active {
+            background: #4fc3f7;
+            color: #1a237e;
+            border-color: #4fc3f7;
+        }
+        
+        .difficulty-btn.easy {
+            border-color: #4caf50;
+        }
+        
+        .difficulty-btn.easy.active {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .difficulty-btn.medium {
+            border-color: #ff9800;
+        }
+        
+        .difficulty-btn.medium.active {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .difficulty-btn.hard {
+            border-color: #f44336;
+        }
+        
+        .difficulty-btn.hard.active {
+            background: #f44336;
+            color: white;
+        }
+        
+        .game-info {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .info-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .info-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4fc3f7;
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            color: #e3f2fd;
+        }
+        
+        .game-board {
+            display: grid;
+            gap: 10px;
+            width: 100%;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            justify-content: center;
+        }
+        
+        .tech-card {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #3949ab, #5c6bc0);
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            text-align: center;
+            min-width: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tech-card:hover {
+            transform: scale(1.05);
+            border-color: #4fc3f7;
+        }
+        
+        .tech-card.selected {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            border-color: #ffeb3b;
+        }
+        
+        .tech-card.matched {
+            background: linear-gradient(135deg, #43a047, #66bb6a);
+            border-color: #69f0ae;
+        }
+        
+        .tech-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .tech-name {
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .image-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+        }
+        
+        .school-image {
+            width: 100%;
+            height: 80%;
+            object-fit: contain;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .image-label {
+            font-size: 0.6rem;
+            font-weight: bold;
+            color: #333;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2px 5px;
+            border-radius: 3px;
+            text-align: center;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #4fc3f7, #29b6f6);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 140px;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, #29b6f6, #03a9f4);
+        }
+        
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .instructions h3 {
+            color: #4fc3f7;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .instructions ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .instructions li:before {
+            content: "▸";
+            color: #ffeb3b;
+            position: absolute;
+            left: 0;
+        }
+        
+        .victory-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            display: none;
+        }
+        
+        .victory-message h2 {
+            font-size: 3rem;
+            color: #4fc3f7;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .victory-message p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .difficulty-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
 
-    selectedCards = [];
-    lockBoard = false;
-}
-</script>
+        @media (max-width: 600px) {
+            .game-info {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .difficulty-selector {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .difficulty-btn {
+                width: 100%;
+                max-width: 200px;
+            }
+            
+            .image-label {
+                font-size: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">SETEC</div>
+            <div class="subtitle">Secretaria de Tecnologia - Conexão Tecnológica</div>
+        </div>
+        
+        <div class="difficulty-selector">
+            <button class="difficulty-btn easy active" onclick="setDifficulty('easy')">
+                Fácil (4 pares)
+            </button>
+            <button class="difficulty-btn medium" onclick="setDifficulty('medium')">
+                Médio (6 pares)
+            </button>
+            <button class="difficulty-btn hard" onclick="setDifficulty('hard')">
+                Difícil (8 pares)
+            </button>
+        </div>
+        
+        <div class="difficulty-info" id="difficultyInfo">
+            <strong>Fácil:</strong> 4 pares de tecnologias - Tabuleiro 4x4
+        </div>
+        
+        <div class="game-info">
+            <div class="info-card">
+                <div class="info-value" id="score">0</div>
+                <div class="info-label">PONTUAÇÃO</div>
+            </div>
+            <div class="info-card">
+                <div class="info-value" id="pairs">0</div>
+                <div class="info-label">PARES ENCONTRADOS</div>
+            </div>
+            <div class="info-card">
+                <div class="info-value" id="moves">0</div>
+                <div class="info-label">JOGADAS</div>
+            </div>
+            <div class="info-card">
+                <div class="info-value" id="time">0</div>
+                <div class="info-label">TEMPO (s)</div>
+            </div>
+        </div>
+        
+        <div class="game-board" id="gameBoard">
+            <!-- Cartas serão geradas pelo JavaScript -->
+        </div>
+        
+        <div class="controls">
+            <button onclick="startGame()" id="startBtn">Iniciar Jogo</button>
+            <button onclick="resetGame()" id="resetBtn">Reiniciar</button>
+            <button onclick="showHint()" id="hintBtn">Dica (3)</button>
+        </div>
+        
+        <div class="instructions">
+            <h3>COMO JOGAR</h3>
+            <ul>
+                <li>Escolha a dificuldade: Fácil, Médio ou Difícil</li>
+                <li>Encontre os pares de tecnologias correspondentes</li>
+                <li>Clique em duas cartas para revelá-las</li>
+                <li>Se formarem um par, elas permanecem viradas</li>
+                <li>Use as dicas quando precisar de ajuda</li>
+                <li>Tente encontrar todos os pares rapidamente!</li>
+            </ul>
+        </div>
+        
+        <div class="victory-message" id="victoryMessage">
+            <h2>PARABÉNS!</h2>
+            <p>Você completou o jogo em <span id="finalTime">0</span> segundos!</p>
+            <p>Com <span id="finalMoves">0</span> jogadas e <span id="finalHints">0</span> dicas usadas</p>
+            <p>Sua pontuação: <span id="finalScore">0</span> pontos</p>
+            <button onclick="playAgain()">Jogar Novamente</button>
+        </div>
+    </div>
 
+    <script>
+        // Elementos do jogo
+        const gameBoard = document.getElementById('gameBoard');
+        const scoreElement = document.getElementById('score');
+        const pairsElement = document.getElementById('pairs');
+        const movesElement = document.getElementById('moves');
+        const timeElement = document.getElementById('time');
+        const victoryMessage = document.getElementById('victoryMessage');
+        const finalTimeElement = document.getElementById('finalTime');
+        const finalMovesElement = document.getElementById('finalMoves');
+        const finalHintsElement = document.getElementById('finalHints');
+        const finalScoreElement = document.getElementById('finalScore');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const hintBtn = document.getElementById('hintBtn');
+        const difficultyInfo = document.getElementById('difficultyInfo');
+        
+        // SVG das imagens fornecidas
+        const barbosaFerrazImage1 = `
+            <svg width="100" height="80" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+                <rect width="100" height="80" fill="#f8f9fa"/>
+                <rect x="5" y="5" width="90" height="70" fill="#e9ecef" stroke="#343a40" stroke-width="1"/>
+                <text x="50" y="20" text-anchor="middle" font-family="Arial" font-size="6" fill="#343a40" font-weight="bold">X SETEC1 2025</text>
+                <text x="50" y="30" text-anchor="middle" font-family="Arial" font-size="5" fill="#343a40" font-weight="bold">COLEGIO ESTADUAL</text>
+                <text x="50" y="35" text-anchor="middle" font-family="Arial" font-size="5" fill="#343a40" font-weight="bold">BARBOSA FERRAZ</text>
+                <text x="50" y="45" text-anchor="middle" font-family="Arial" font-size="4" fill="#343a40">DEPARTAMENTO DE HISTÓRIA</text>
+                <text x="50" y="55" text-anchor="middle" font-family="Arial" font-size="4" fill="#343a40">1940/2020</text>
+                <text x="50" y="65" text-anchor="middle" font-family="Arial" font-size="4" fill="#343a40">IVAIPORÃ-PR</text>
+            </svg>
+        `;
+
+        const barbosaFerrazImage2 = `
+            <svg width="100" height="80" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+                <rect width="100" height="80" fill="#f8f9fa"/>
+                <rect x="5" y="5" width="90" height="70" fill="#e9ecef" stroke="#343a40" stroke-width="1"/>
+                <text x="50" y="25" text-anchor="middle" font-family="Arial" font-size="6" fill="#343a40" font-weight="bold">COLEGIO ESTADUAL</text>
+                <text x="50" y="32" text-anchor="middle" font-family="Arial" font-size="6" fill="#343a40" font-weight="bold">BARBOSA FERRAZ</text>
+                <text x="50" y="45" text-anchor="middle" font-family="Arial" font-size="5" fill="#343a40">Departamento de História</text>
+                <text x="50" y="55" text-anchor="middle" font-family="Arial" font-size="5" fill="#343a40">1960 / 2020</text>
+                <text x="50" y="65" text-anchor="middle" font-family="Arial" font-size="5" fill="#343a40">IVAIPORÃ-PR</text>
+            </svg>
+        `;
+
+        const setecImage = `
+            <svg width="100" height="80" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+                <rect width="100" height="80" fill="#1a237e"/>
+                <rect x="10" y="10" width="80" height="60" fill="#283593" stroke="#4fc3f7" stroke-width="2"/>
+                <text x="50" y="30" text-anchor="middle" font-family="Arial" font-size="10" fill="#4fc3f7" font-weight="bold">SETEC</text>
+                <text x="50" y="45" text-anchor="middle" font-family="Arial" font-size="5" fill="#e3f2fd">Secretaria de</text>
+                <text x="50" y="52" text-anchor="middle" font-family="Arial" font-size="5" fill="#e3f2fd">Tecnologia</text>
+                <text x="50" y="65" text-anchor="middle" font-family="Arial" font-size="4" fill="#4fc3f7">Conectando o Futuro</text>
+            </svg>
+        `;
+
+        // Todas as tecnologias disponíveis (incluindo as imagens)
+        const allTechnologies = [
+            { name: "HTML", icon: "🌐", description: "Linguagem de Marcação" },
+            { name: "CSS", icon: "🎨", description: "Estilização" },
+            { name: "JS", icon: "⚡", description: "Programação" },
+            { name: "Python", icon: "🐍", description: "IA e Dados" },
+            { name: "Java", icon: "☕", description: "Enterprise" },
+            { name: "SQL", icon: "🗃️", description: "Banco de Dados" },
+            { name: "React", icon: "⚛️", description: "Frontend" },
+            { name: "Node.js", icon: "🟢", description: "Backend" },
+            { 
+                name: "BARBOSA_FERRAZ_1", 
+                type: "image",
+                content: barbosaFerrazImage1,
+                description: "Colégio Barbosa Ferraz",
+                label: "Barbosa Ferraz 1"
+            },
+            { 
+                name: "BARBOSA_FERRAZ_2", 
+                type: "image",
+                content: barbosaFerrazImage2,
+                description: "Colégio Barbosa Ferraz",
+                label: "Barbosa Ferraz 2"
+            },
+            { 
+                name: "SETEC", 
+                type: "image",
+                content: setecImage,
+                description: "Secretaria de Tecnologia",
+                label: "SETEC"
+            }
+        ];
+        
+        // Configurações de dificuldade
+        const difficultySettings = {
+            easy: {
+                pairs: 4,
+                grid: "4x4",
+                timeBonus: 50,
+                hintCount: 3
+            },
+            medium: {
+                pairs: 6,
+                grid: "4x4",
+                timeBonus: 75,
+                hintCount: 2
+            },
+            hard: {
+                pairs: 8,
+                grid: "4x5",
+                timeBonus: 100,
+                hintCount: 1
+            }
+        };
+        
+        // Variáveis do jogo
+        let currentDifficulty = 'easy';
+        let cards = [];
+        let selectedCards = [];
+        let matchedPairs = 0;
+        let totalPairs = difficultySettings.easy.pairs;
+        let moves = 0;
+        let score = 0;
+        let gameActive = false;
+        let gameTime = 0;
+        let gameTimer;
+        let hintsUsed = 0;
+        let totalHints = difficultySettings.easy.hintCount;
+        
+        // Inicializar o jogo
+        function init() {
+            updateDifficultyInfo();
+            createCards();
+            updateHintButton();
+        }
+        
+        // Definir dificuldade
+        function setDifficulty(difficulty) {
+            currentDifficulty = difficulty;
+            totalPairs = difficultySettings[difficulty].pairs;
+            totalHints = difficultySettings[difficulty].hintCount;
+            hintsUsed = 0;
+            
+            // Atualizar botões de dificuldade
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.difficulty-btn.${difficulty}`).classList.add('active');
+            
+            updateDifficultyInfo();
+            resetGame();
+        }
+        
+        // Atualizar informações da dificuldade
+        function updateDifficultyInfo() {
+            const settings = difficultySettings[currentDifficulty];
+            let infoText = '';
+            
+            switch(currentDifficulty) {
+                case 'easy':
+                    infoText = `<strong>Fácil:</strong> ${settings.pairs} pares - Tabuleiro ${settings.grid} - ${settings.hintCount} dicas`;
+                    break;
+                case 'medium':
+                    infoText = `<strong>Médio:</strong> ${settings.pairs} pares - Tabuleiro ${settings.grid} - ${settings.hintCount} dicas`;
+                    break;
+                case 'hard':
+                    infoText = `<strong>Difícil:</strong> ${settings.pairs} pares - Tabuleiro ${settings.grid} - ${settings.hintCount} dica`;
+                    break;
+            }
+            
+            difficultyInfo.innerHTML = infoText;
+        }
+        
+        // Criar as cartas do jogo
+        function createCards() {
+            gameBoard.innerHTML = '';
+            cards = [];
+            
+            // Selecionar tecnologias aleatórias baseadas na dificuldade
+            // Garantir que as cartas da escola e SETEC sejam sempre incluídas
+            let selectedTechs;
+            
+            if (totalPairs >= 3) {
+                // Incluir as três cartas de imagem
+                const imageCards = allTechnologies.filter(tech => 
+                    tech.type === "image"
+                );
+                
+                // Selecionar o restante aleatoriamente
+                const otherTechs = allTechnologies
+                    .filter(tech => tech.type !== "image")
+                    .sort(() => Math.random() - 0.5)
+                    .slice(0, totalPairs - 3);
+                
+                selectedTechs = [...imageCards, ...otherTechs];
+            } else {
+                selectedTechs = [...allTechnologies]
+                    .sort(() => Math.random() - 0.5)
+                    .slice(0, totalPairs);
+            }
+            
+            // Duplicar as tecnologias para formar pares
+            const gameTechnologies = [...selectedTechs, ...selectedTechs];
+            
+            // Embaralhar as cartas
+            shuffleArray(gameTechnologies);
+            
+            // Configurar grid baseado na dificuldade
+            const gridColumns = currentDifficulty === 'hard' ? 5 : 4;
+            gameBoard.style.gridTemplateColumns = `repeat(${gridColumns}, 1fr)`;
+            
+            // Criar as cartas no tabuleiro
+            gameTechnologies.forEach((tech, index) => {
+                const card = document.createElement('div');
+                card.className = 'tech-card';
+                
+                // TODAS as cartas mostram "?" quando viradas para baixo
+                card.innerHTML = `
+                    <div class="tech-icon">?</div>
+                    <div class="tech-name">?</div>
+                `;
+                
+                card.dataset.index = index;
+                card.dataset.tech = tech.name;
+                
+                card.addEventListener('click', () => selectCard(card, tech));
+                gameBoard.appendChild(card);
+                cards.push({
+                    element: card,
+                    tech: tech,
+                    isFlipped: false,
+                    isMatched: false
+                });
+            });
+        }
+        
+        // Iniciar o jogo
+        function startGame() {
+            if (gameActive) return;
+            
+            gameActive = true;
+            startBtn.disabled = true;
+            startBtn.textContent = 'Jogo em Andamento';
+            resetBtn.disabled = false;
+            hintBtn.disabled = false;
+            
+            // Reiniciar contadores
+            matchedPairs = 0;
+            moves = 0;
+            score = 0;
+            gameTime = 0;
+            hintsUsed = 0;
+            updateDisplay();
+            updateHintButton();
+            
+            // Iniciar timer
+            clearInterval(gameTimer);
+            gameTimer = setInterval(() => {
+                gameTime++;
+                timeElement.textContent = gameTime;
+            }, 1000);
+        }
+        
+        // Selecionar uma carta
+        function selectCard(card, tech) {
+            if (!gameActive) return;
+            
+            const cardIndex = parseInt(card.dataset.index);
+            const cardData = cards[cardIndex];
+            
+            // Verificar se a carta já foi virada ou está pareada
+            if (cardData.isFlipped || cardData.isMatched || selectedCards.length >= 2) {
+                return;
+            }
+            
+            // Virar a carta
+            cardData.isFlipped = true;
+            card.classList.add('selected');
+            
+            if (tech.type === "image") {
+                card.innerHTML = `
+                    <div class="image-content">
+                        <div class="school-image">${tech.content}</div>
+                        <div class="image-label">${tech.label}</div>
+                    </div>
+                `;
+            } else {
+                card.innerHTML = `
+                    <div class="tech-icon">${tech.icon}</div>
+                    <div class="tech-name">${tech.name}</div>
+                    <div style="font-size: 0.5rem; margin-top: 3px;">${tech.description}</div>
+                `;
+            }
+            
+            selectedCards.push(cardData);
+            
+            // Verificar se duas cartas foram selecionadas
+            if (selectedCards.length === 2) {
+                moves++;
+                movesElement.textContent = moves;
+                
+                setTimeout(checkMatch, 800);
+            }
+        }
+        
+        // Verificar se as cartas selecionadas formam um par
+        function checkMatch() {
+            const [card1, card2] = selectedCards;
+            
+            if (card1.tech.name === card2.tech.name) {
+                // Par encontrado!
+                card1.isMatched = true;
+                card2.isMatched = true;
+                card1.element.classList.remove('selected');
+                card2.element.classList.remove('selected');
+                card1.element.classList.add('matched');
+                card2.element.classList.add('matched');
+                
+                matchedPairs++;
+                pairsElement.textContent = matchedPairs;
+                
+                // Calcular pontuação
+                const timeMultiplier = Math.max(1, 10 - Math.floor(gameTime / 10));
+                const movesMultiplier = Math.max(1, 10 - Math.floor(moves / 5));
+                const basePoints = difficultySettings[currentDifficulty].timeBonus;
+                
+                score += basePoints + (timeMultiplier * movesMultiplier);
+                scoreElement.textContent = score;
+                
+                // Verificar vitória
+                if (matchedPairs === totalPairs) {
+                    endGame();
+                }
+            } else {
+                // Virar as cartas de volta
+                card1.isFlipped = false;
+                card2.isFlipped = false;
+                
+                card1.element.classList.remove('selected');
+                card2.element.classList.remove('selected');
+                
+                // Ambas as cartas voltam a mostrar "?"
+                card1.element.innerHTML = `
+                    <div class="tech-icon">?</div>
+                    <div class="tech-name">?</div>
+                `;
+                
+                card2.element.innerHTML = `
+                    <div class="tech-icon">?</div>
+                    <div class="tech-name">?</div>
+                `;
+            }
+            
+            selectedCards = [];
+        }
+        
+        // Mostrar dica
+        function showHint() {
+            if (!gameActive || hintsUsed >= totalHints) return;
+            
+            // Encontrar um par não descoberto
+            const unmatchedCards = cards.filter(card => !card.isMatched && !card.isFlipped);
+            
+            if (unmatchedCards.length >= 2) {
+                // Revelar temporariamente duas cartas do mesmo par
+                const techName = unmatchedCards[0].tech.name;
+                const matchingCards = unmatchedCards.filter(card => card.tech.name === techName);
+                
+                if (matchingCards.length >= 2) {
+                    matchingCards.slice(0, 2).forEach(card => {
+                        card.isFlipped = true;
+                        card.element.classList.add('selected');
+                        
+                        if (card.tech.type === "image") {
+                            card.element.innerHTML = `
+                                <div class="image-content">
+                                    <div class="school-image">${card.tech.content}</div>
+                                    <div class="image-label">${card.tech.label}</div>
+                                </div>
+                            `;
+                        } else {
+                            card.element.innerHTML = `
+                                <div class="tech-icon">${card.tech.icon}</div>
+                                <div class="tech-name">${card.tech.name}</div>
+                                <div style="font-size: 0.5rem; margin-top: 3px;">${card.tech.description}</div>
+                            `;
+                        }
+                    });
+                    
+                    // Esconder após 2 segundos
+                    setTimeout(() => {
+                        matchingCards.forEach(card => {
+                            if (!card.isMatched) {
+                                card.isFlipped = false;
+                                card.element.classList.remove('selected');
+                                
+                                // Volta a mostrar "?"
+                                card.element.innerHTML = `
+                                    <div class="tech-icon">?</div>
+                                    <div class="tech-name">?</div>
+                                `;
+                            }
+                        });
+                    }, 2000);
+                    
+                    hintsUsed++;
+                    updateHintButton();
+                    
+                    // Penalidade por usar dica
+                    score = Math.max(0, score - 50);
+                    scoreElement.textContent = score;
+                }
+            }
+        }
+        
+        // Atualizar botão de dica
+        function updateHintButton() {
+            const hintsLeft = totalHints - hintsUsed;
+            hintBtn.textContent = `Dica (${hintsLeft})`;
+            hintBtn.disabled = hintsLeft === 0 || !gameActive;
+        }
+        
+        // Finalizar o jogo
+        function endGame() {
+            gameActive = false;
+            clearInterval(gameTimer);
+            
+            // Mostrar mensagem de vitória
+            finalTimeElement.textContent = gameTime;
+            finalMovesElement.textContent = moves;
+            finalHintsElement.textContent = hintsUsed;
+            finalScoreElement.textContent = score;
+            victoryMessage.style.display = 'flex';
+            
+            startBtn.disabled = false;
+            startBtn.textContent = 'Iniciar Jogo';
+            resetBtn.disabled = false;
+            hintBtn.disabled = true;
+        }
+        
+        // Jogar novamente
+        function playAgain() {
+            victoryMessage.style.display = 'none';
+            resetGame();
+        }
+        
+        // Reiniciar o jogo
+        function resetGame() {
+            gameActive = false;
+            clearInterval(gameTimer);
+            matchedPairs = 0;
+            moves = 0;
+            score = 0;
+            gameTime = 0;
+            hintsUsed = 0;
+            selectedCards = [];
+            
+            updateDisplay();
+            updateHintButton();
+            createCards();
+            
+            startBtn.disabled = false;
+            startBtn.textContent = 'Iniciar Jogo';
+            resetBtn.disabled = false;
+            hintBtn.disabled = false;
+        }
+        
+        // Atualizar display
+        function updateDisplay() {
+            scoreElement.textContent = score;
+            pairsElement.textContent = matchedPairs;
+            movesElement.textContent = moves;
+            timeElement.textContent = gameTime;
+        }
+        
+        // Embaralhar array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        
+        // Inicializar o jogo quando a página carregar
+        window.onload = init;
+    </script>
 </body>
 </html>
