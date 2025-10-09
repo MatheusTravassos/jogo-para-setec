@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jogo da Memória - SETEC</title>
+<title>Jogo da Memória - SETEC 2025</title>
 <style>
     body {
         font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #007bff, #00d4ff);
+        background: linear-gradient(135deg, #004aad, #00c3ff);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -67,13 +67,13 @@
         width: 100%;
         height: auto;
         object-fit: contain;
-        max-height: 60px;
+        max-height: 80px;
         border-radius: 8px;
     }
 
     button {
         background: #ffffff;
-        color: #007bff;
+        color: #004aad;
         font-weight: bold;
         border: none;
         padding: 10px 20px;
@@ -84,14 +84,14 @@
     }
 
     button:hover {
-        background: #007bff;
+        background: #004aad;
         color: white;
     }
 </style>
 </head>
 <body>
 
-<h1>🎓 Jogo da Memória - SETEC 🎓</h1>
+<h1>🎓 Jogo da Memória - SETEC 2025 🎓</h1>
 <div id="game-board"></div>
 <button onclick="startGame()">🔁 Reiniciar</button>
 
@@ -108,14 +108,14 @@ const allTechnologies = [
     { 
         name: "BARBOSA_FERRAZ", 
         type: "image",
-        img: "./c8813a57-1651-4c0c-8684-bb874cff3ec5.png", 
-        description: "Colégio Barbosa Ferraz - Logo 1"
+        img: "./f09797e0-de28-429b-9f46-c084b245db9f.png", 
+        description: "Colégio Estadual Barbosa Ferraz"
     },
     { 
-        name: "BARBOSA_FERRAZ_2", 
+        name: "SETEC_2025", 
         type: "image",
-        img: "./d14b4923-0a17-48bf-9323-d4f4a63943b0.png", 
-        description: "Colégio Barbosa Ferraz - Logo 2"
+        img: "./903e03cd-b2d1-4b41-a7ee-2d5281ce4c7f.png", 
+        description: "X SETEC 2025"
     }
 ];
 
@@ -136,8 +136,7 @@ function startGame() {
 
         // Mostra interrogação no início
         card.innerHTML = `
-            <div class="tech-icon">?</div>
-            <div class="tech-name">?</div>
+            <div class="tech-icon">❓</div>
         `;
 
         card.addEventListener("click", () => selectCard(card, tech));
@@ -174,25 +173,4 @@ function checkMatch() {
 
     if (card1.tech.name === card2.tech.name) {
         card1.element.classList.add("matched");
-        card2.element.classList.add("matched");
-    } else {
-        // Volta a mostrar interrogação
-        setTimeout(() => {
-            [card1, card2].forEach(card => {
-                card.element.classList.remove("flipped");
-                card.element.innerHTML = `
-                    <div class="tech-icon">?</div>
-                    <div class="tech-name">?</div>
-                `;
-            });
-        }, 600);
-    }
-
-    selectedCards = [];
-    lockBoard = false;
-}
-
-startGame();
-</script>
-</body>
-</html>
+        card2.element.cl
