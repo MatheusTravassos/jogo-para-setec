@@ -216,7 +216,9 @@
         }
         
         .tech-icon {
-            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
             margin-bottom: 5px;
         }
         
@@ -371,9 +373,11 @@
             opacity: 0.8;
         }
 
-        .celebration-animation {
+        .celebration-image {
             position: absolute;
-            font-size: 2rem;
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
             animation: celebrate 3s ease-out;
             opacity: 0;
         }
@@ -391,6 +395,12 @@
                 transform: translateY(-300px) scale(1.5);
                 opacity: 0;
             }
+        }
+
+        .question-mark {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: white;
         }
 
         @media (max-width: 768px) {
@@ -424,6 +434,11 @@
             
             .image-label {
                 font-size: 0.5rem;
+            }
+            
+            .tech-icon {
+                width: 30px;
+                height: 30px;
             }
         }
     </style>
@@ -467,516 +482,153 @@
                 <div class="info-label">PONTUAÇÃO</div>
             </div>
             <div class="info-card">
-                <div class="info-value" id="pairs">0</div>
-                <div class="info-label">PARES ENCONTRADOS</div>
-            </div>
-            <div class="info-card">
                 <div class="info-value" id="moves">0</div>
                 <div class="info-label">JOGADAS</div>
             </div>
             <div class="info-card">
-                <div class="info-value" id="time">0</div>
-                <div class="info-label">TEMPO (s)</div>
+                <div class="info-value" id="matches">0</div>
+                <div class="info-label">PARES ENCONTRADOS</div>
+            </div>
+            <div class="info-card">
+                <div class="info-value" id="timer">00:00</div>
+                <div class="info-label">TEMPO</div>
             </div>
         </div>
         
         <div class="game-board" id="gameBoard">
-            <!-- Cartas serão geradas pelo JavaScript -->
+            <!-- O tabuleiro será gerado dinamicamente pelo JavaScript -->
         </div>
         
         <div class="controls">
-            <button onclick="startGame()" id="startBtn">Iniciar Jogo</button>
-            <button onclick="resetGame()" id="resetBtn">Reiniciar</button>
-            <button onclick="showHint()" id="hintBtn">Dica (3)</button>
+            <button onclick="startGame()">Iniciar Jogo</button>
+            <button onclick="resetGame()">Reiniciar</button>
+            <button onclick="showInstructions()">Instruções</button>
         </div>
         
         <div class="instructions">
-            <h3>COMO JOGAR</h3>
+            <h3>Como Jogar</h3>
             <ul>
-                <li>Escolha a dificuldade: Fácil, Médio ou Difícil</li>
-                <li>Encontre os pares de tecnologias correspondentes</li>
-                <li>Clique em duas cartas para revelá-las</li>
-                <li>Se formarem um par, elas permanecem viradas</li>
-                <li>Use as dicas quando precisar de ajuda</li>
-                <li>Tente encontrar todos os pares rapidamente!</li>
+                <li>Clique em duas cartas para virá-las e encontrar os pares correspondentes</li>
+                <li>Cada par encontrado aumenta sua pontuação</li>
+                <li>Tente completar o jogo no menor tempo possível e com o menor número de jogadas</li>
+                <li>Diferentes níveis de dificuldade oferecem mais pares para encontrar</li>
             </ul>
-        </div>
-
-        <div class="footer-credits">
-            Jogo educativo desenvolvido para SETEC
         </div>
         
         <div class="victory-message" id="victoryMessage">
-            <h2>🎉 PARABÉNS! 🎉</h2>
-            <p>Você completou o jogo em <span id="finalTime">0</span> segundos!</p>
-            <p>Com <span id="finalMoves">0</span> jogadas e <span id="finalHints">0</span> dicas usadas</p>
-            <p>Sua pontuação: <span id="finalScore">0</span> pontos</p>
-            <button onclick="playAgain()">Jogar Novamente</button>
+            <h2>Parabéns! Você Venceu!</h2>
+            <p id="victoryStats">Sua pontuação: 0 | Jogadas: 0 | Tempo: 00:00</p>
+            <button onclick="hideVictoryMessage()">Jogar Novamente</button>
+        </div>
+        
+        <div class="footer-credits">
+            Desenvolvido pela SETEC - Secretaria de Tecnologia
         </div>
     </div>
 
     <script>
-        // Elementos do jogo
-        const gameBoard = document.getElementById('gameBoard');
-        const scoreElement = document.getElementById('score');
-        const pairsElement = document.getElementById('pairs');
-        const movesElement = document.getElementById('moves');
-        const timeElement = document.getElementById('time');
-        const victoryMessage = document.getElementById('victoryMessage');
-        const finalTimeElement = document.getElementById('finalTime');
-        const finalMovesElement = document.getElementById('finalMoves');
-        const finalHintsElement = document.getElementById('finalHints');
-        const finalScoreElement = document.getElementById('finalScore');
-        const startBtn = document.getElementById('startBtn');
-        const resetBtn = document.getElementById('resetBtn');
-        const hintBtn = document.getElementById('hintBtn');
-        const difficultyInfo = document.getElementById('difficultyInfo');
-        
-        // URLs das imagens fornecidas
-        const barbosaFerrazImage = '99da37dd-c8cf-4d4d-abb3-22b920d79980.jpeg';
-        const setecImage = 'f46bc5dc-6c49-4151-8d5d-1c4a572d663f.jpeg';
-
-        // Todas as tecnologias disponíveis (incluindo as imagens)
-        const allTechnologies = [
-            { name: "HTML", icon: "🌐", description: "Linguagem de Marcação" },
-            { name: "CSS", icon: "🎨", description: "Estilização" },
-            { name: "JS", icon: "⚡", description: "Programação" },
-            { name: "Python", icon: "🐍", description: "IA e Dados" },
-            { name: "Java", icon: "☕", description: "Enterprise" },
-            { name: "SQL", icon: "🗃️", description: "Banco de Dados" },
-            { name: "React", icon: "⚛️", description: "Frontend" },
-            { name: "Node.js", icon: "🟢", description: "Backend" },
-            { 
-                name: "BARBOSA_FERRAZ", 
-                type: "image",
-                imageUrl: barbosaFerrazImage,
-                description: "Colégio Barbosa Ferraz",
-                label: "Barbosa Ferraz"
-            },
-            { 
-                name: "SETEC", 
-                type: "image",
-                imageUrl: setecImage,
-                description: "Secretaria de Tecnologia",
-                label: "SETEC"
-            }
-        ];
-        
-        // Configurações de dificuldade
-        const difficultySettings = {
-            easy: {
-                pairs: 4,
-                grid: "4x4",
-                timeBonus: 50,
-                hintCount: 3
-            },
-            medium: {
-                pairs: 6,
-                grid: "4x4",
-                timeBonus: 75,
-                hintCount: 2
-            },
-            hard: {
-                pairs: 8,
-                grid: "4x5",
-                timeBonus: 100,
-                hintCount: 1
-            }
+        // Configurações do jogo
+        let gameState = {
+            difficulty: 'easy',
+            cards: [],
+            selectedCards: [],
+            matchedPairs: 0,
+            totalPairs: 4,
+            moves: 0,
+            score: 0,
+            gameStarted: false,
+            timer: 0,
+            timerInterval: null
         };
-        
-        // Variáveis do jogo
-        let currentDifficulty = 'easy';
-        let cards = [];
-        let selectedCards = [];
-        let matchedPairs = 0;
-        let totalPairs = difficultySettings.easy.pairs;
-        let moves = 0;
-        let score = 0;
-        let gameActive = false;
-        let gameTime = 0;
-        let gameTimer;
-        let hintsUsed = 0;
-        let totalHints = difficultySettings.easy.hintCount;
-        
-        // Inicializar o jogo
-        function init() {
-            updateDifficultyInfo();
-            createCards();
-            updateHintButton();
+
+        // Tecnologias disponíveis
+        const technologies = [
+            { name: 'Node.js', image: 'sdasda.png' },
+            { name: 'React', image: 'as.png' },
+            { name: 'CSS', image: 'das.png' },
+            { name: 'Java', image: 'eq.png' },
+            { name: 'Python', image: 'a.png' },
+            { name: 'SQL', image: 'sq.png' },
+            { name: 'JavaScript', image: 'sew.jpeg' },
+            { name: 'HTML', image: 'html.png' }
+        ];
+
+        // Inicialização do jogo
+        function initGame() {
+            createGameBoard();
+            updateGameInfo();
         }
-        
+
         // Definir dificuldade
-        function setDifficulty(difficulty) {
-            currentDifficulty = difficulty;
-            totalPairs = difficultySettings[difficulty].pairs;
-            totalHints = difficultySettings[difficulty].hintCount;
-            hintsUsed = 0;
+        function setDifficulty(level) {
+            gameState.difficulty = level;
             
-            // Atualizar botões de dificuldade
+            // Atualizar botões ativos
             document.querySelectorAll('.difficulty-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            document.querySelector(`.difficulty-btn.${difficulty}`).classList.add('active');
+            document.querySelector(`.difficulty-btn.${level}`).classList.add('active');
             
-            updateDifficultyInfo();
-            resetGame();
-        }
-        
-        // Atualizar informações da dificuldade
-        function updateDifficultyInfo() {
-            const settings = difficultySettings[currentDifficulty];
+            // Atualizar informações de dificuldade
             let infoText = '';
-            
-            switch(currentDifficulty) {
+            switch(level) {
                 case 'easy':
-                    infoText = `<strong>Fácil:</strong> ${settings.pairs} pares - Tabuleiro ${settings.grid} - ${settings.hintCount} dicas`;
+                    gameState.totalPairs = 4;
+                    infoText = '<strong>Fácil:</strong> 4 pares de tecnologias - Tabuleiro 4x4';
                     break;
                 case 'medium':
-                    infoText = `<strong>Médio:</strong> ${settings.pairs} pares - Tabuleiro ${settings.grid} - ${settings.hintCount} dicas`;
+                    gameState.totalPairs = 6;
+                    infoText = '<strong>Médio:</strong> 6 pares de tecnologias - Tabuleiro 4x6';
                     break;
                 case 'hard':
-                    infoText = `<strong>Difícil:</strong> ${settings.pairs} pares - Tabuleiro ${settings.grid} - ${settings.hintCount} dica`;
+                    gameState.totalPairs = 8;
+                    infoText = '<strong>Difícil:</strong> 8 pares de tecnologias - Tabuleiro 4x8';
                     break;
             }
+            document.getElementById('difficultyInfo').innerHTML = infoText;
             
-            difficultyInfo.innerHTML = infoText;
+            // Reiniciar o jogo com a nova dificuldade
+            resetGame();
         }
-        
-        // Criar as cartas do jogo
-        function createCards() {
+
+        // Criar tabuleiro do jogo
+        function createGameBoard() {
+            const gameBoard = document.getElementById('gameBoard');
             gameBoard.innerHTML = '';
-            cards = [];
             
-            // Selecionar tecnologias aleatórias baseadas na dificuldade
-            // Garantir que as cartas da escola e SETEC sejam sempre incluídas
-            let selectedTechs;
+            // Selecionar tecnologias baseado na dificuldade
+            const selectedTechs = technologies.slice(0, gameState.totalPairs);
             
-            if (totalPairs >= 2) {
-                // Incluir as duas cartas de imagem
-                const imageCards = allTechnologies.filter(tech => 
-                    tech.type === "image"
-                );
-                
-                // Selecionar o restante aleatoriamente
-                const otherTechs = allTechnologies
-                    .filter(tech => tech.type !== "image")
-                    .sort(() => Math.random() - 0.5)
-                    .slice(0, totalPairs - 2);
-                
-                selectedTechs = [...imageCards, ...otherTechs];
-            } else {
-                selectedTechs = [...allTechnologies]
-                    .sort(() => Math.random() - 0.5)
-                    .slice(0, totalPairs);
-            }
+            // Duplicar para formar pares e embaralhar
+            gameState.cards = [...selectedTechs, ...selectedTechs];
+            shuffleArray(gameState.cards);
             
-            // Duplicar as tecnologias para formar pares
-            const gameTechnologies = [...selectedTechs, ...selectedTechs];
+            // Definir layout do grid baseado na dificuldade
+            let gridColumns = 4;
+            if (gameState.difficulty === 'medium') gridColumns = 6;
+            if (gameState.difficulty === 'hard') gridColumns = 8;
             
-            // Embaralhar as cartas
-            shuffleArray(gameTechnologies);
-            
-            // Configurar grid baseado na dificuldade
-            const gridColumns = currentDifficulty === 'hard' ? 5 : 4;
             gameBoard.style.gridTemplateColumns = `repeat(${gridColumns}, 1fr)`;
             
-            // Criar as cartas no tabuleiro
-            gameTechnologies.forEach((tech, index) => {
+            // Criar cartas
+            gameState.cards.forEach((tech, index) => {
                 const card = document.createElement('div');
                 card.className = 'tech-card';
-                
-                // TODAS as cartas mostram "?" quando viradas para baixo
-                card.innerHTML = `
-                    <div class="tech-icon">?</div>
-                    <div class="tech-name">?</div>
-                `;
-                
                 card.dataset.index = index;
                 card.dataset.tech = tech.name;
                 
-                card.addEventListener('click', () => selectCard(card, tech));
-                gameBoard.appendChild(card);
-                cards.push({
-                    element: card,
-                    tech: tech,
-                    isFlipped: false,
-                    isMatched: false
-                });
-            });
-        }
-        
-        // Iniciar o jogo
-        function startGame() {
-            if (gameActive) return;
-            
-            gameActive = true;
-            startBtn.disabled = true;
-            startBtn.textContent = 'Jogo em Andamento';
-            resetBtn.disabled = false;
-            hintBtn.disabled = false;
-            
-            // Reiniciar contadores
-            matchedPairs = 0;
-            moves = 0;
-            score = 0;
-            gameTime = 0;
-            hintsUsed = 0;
-            updateDisplay();
-            updateHintButton();
-            
-            // Iniciar timer
-            clearInterval(gameTimer);
-            gameTimer = setInterval(() => {
-                gameTime++;
-                timeElement.textContent = gameTime;
-            }, 1000);
-        }
-        
-        // Selecionar uma carta
-        function selectCard(card, tech) {
-            if (!gameActive) return;
-            
-            const cardIndex = parseInt(card.dataset.index);
-            const cardData = cards[cardIndex];
-            
-            // Verificar se a carta já foi virada ou está pareada
-            if (cardData.isFlipped || cardData.isMatched || selectedCards.length >= 2) {
-                return;
-            }
-            
-            // Virar a carta
-            cardData.isFlipped = true;
-            card.classList.add('selected');
-            
-            if (tech.type === "image") {
                 card.innerHTML = `
                     <div class="image-content">
-                        <img src="${tech.imageUrl}" alt="${tech.description}" class="school-image" onerror="this.src='https://via.placeholder.com/100x80/666666/ffffff?text=Imagem+Não+Encontrada'">
-                        <div class="image-label">${tech.label}</div>
+                        <div class="question-mark">?</div>
+                        <div class="tech-name">${tech.name}</div>
                     </div>
                 `;
-            } else {
-                card.innerHTML = `
-                    <div class="tech-icon">${tech.icon}</div>
-                    <div class="tech-name">${tech.name}</div>
-                    <div style="font-size: 0.5rem; margin-top: 3px;">${tech.description}</div>
-                `;
-            }
-            
-            selectedCards.push(cardData);
-            
-            // Verificar se duas cartas foram selecionadas
-            if (selectedCards.length === 2) {
-                moves++;
-                movesElement.textContent = moves;
                 
-                setTimeout(checkMatch, 800);
-            }
+                card.addEventListener('click', () => selectCard(card));
+                gameBoard.appendChild(card);
+            });
         }
-        
-        // Verificar se as cartas selecionadas formam um par
-        function checkMatch() {
-            const [card1, card2] = selectedCards;
-            
-            if (card1.tech.name === card2.tech.name) {
-                // Par encontrado!
-                card1.isMatched = true;
-                card2.isMatched = true;
-                card1.element.classList.remove('selected');
-                card2.element.classList.remove('selected');
-                card1.element.classList.add('matched');
-                card2.element.classList.add('matched');
-                
-                matchedPairs++;
-                pairsElement.textContent = matchedPairs;
-                
-                // Calcular pontuação
-                const timeMultiplier = Math.max(1, 10 - Math.floor(gameTime / 10));
-                const movesMultiplier = Math.max(1, 10 - Math.floor(moves / 5));
-                const basePoints = difficultySettings[currentDifficulty].timeBonus;
-                
-                score += basePoints + (timeMultiplier * movesMultiplier);
-                scoreElement.textContent = score;
-                
-                // Verificar vitória
-                if (matchedPairs === totalPairs) {
-                    // Aumentar atraso antes de mostrar a tela de vitória para 3 segundos
-                    setTimeout(() => {
-                        endGame();
-                    }, 3000); // 3 segundos de atraso
-                }
-            } else {
-                // Virar as cartas de volta
-                card1.isFlipped = false;
-                card2.isFlipped = false;
-                
-                card1.element.classList.remove('selected');
-                card2.element.classList.remove('selected');
-                
-                // Ambas as cartas voltam a mostrar "?"
-                card1.element.innerHTML = `
-                    <div class="tech-icon">?</div>
-                    <div class="tech-name">?</div>
-                `;
-                
-                card2.element.innerHTML = `
-                    <div class="tech-icon">?</div>
-                    <div class="tech-name">?</div>
-                `;
-            }
-            
-            selectedCards = [];
-        }
-        
-        // Mostrar dica
-        function showHint() {
-            if (!gameActive || hintsUsed >= totalHints) return;
-            
-            // Encontrar um par não descoberto
-            const unmatchedCards = cards.filter(card => !card.isMatched && !card.isFlipped);
-            
-            if (unmatchedCards.length >= 2) {
-                // Revelar temporariamente duas cartas do mesmo par
-                const techName = unmatchedCards[0].tech.name;
-                const matchingCards = unmatchedCards.filter(card => card.tech.name === techName);
-                
-                if (matchingCards.length >= 2) {
-                    matchingCards.slice(0, 2).forEach(card => {
-                        card.isFlipped = true;
-                        card.element.classList.add('selected');
-                        
-                        if (card.tech.type === "image") {
-                            card.element.innerHTML = `
-                                <div class="image-content">
-                                    <img src="${card.tech.imageUrl}" alt="${card.tech.description}" class="school-image" onerror="this.src='https://via.placeholder.com/100x80/666666/ffffff?text=Imagem+Não+Encontrada'">
-                                    <div class="image-label">${card.tech.label}</div>
-                                </div>
-                            `;
-                        } else {
-                            card.element.innerHTML = `
-                                <div class="tech-icon">${card.tech.icon}</div>
-                                <div class="tech-name">${card.tech.name}</div>
-                                <div style="font-size: 0.5rem; margin-top: 3px;">${card.tech.description}</div>
-                            `;
-                        }
-                    });
-                    
-                    // Esconder após 2 segundos
-                    setTimeout(() => {
-                        matchingCards.forEach(card => {
-                            if (!card.isMatched) {
-                                card.isFlipped = false;
-                                card.element.classList.remove('selected');
-                                
-                                // Volta a mostrar "?"
-                                card.element.innerHTML = `
-                                    <div class="tech-icon">?</div>
-                                    <div class="tech-name">?</div>
-                                `;
-                            }
-                        });
-                    }, 2000);
-                    
-                    hintsUsed++;
-                    updateHintButton();
-                    
-                    // Penalidade por usar dica
-                    score = Math.max(0, score - 50);
-                    scoreElement.textContent = score;
-                }
-            }
-        }
-        
-        // Atualizar botão de dica
-        function updateHintButton() {
-            const hintsLeft = totalHints - hintsUsed;
-            hintBtn.textContent = `Dica (${hintsLeft})`;
-            hintBtn.disabled = hintsLeft === 0 || !gameActive;
-        }
-        
-        // Finalizar o jogo
-        function endGame() {
-            gameActive = false;
-            clearInterval(gameTimer);
-            
-            // Criar efeito de celebração
-            createCelebration();
-            
-            // Mostrar mensagem de vitória com transição suave
-            finalTimeElement.textContent = gameTime;
-            finalMovesElement.textContent = moves;
-            finalHintsElement.textContent = hintsUsed;
-            finalScoreElement.textContent = score;
-            
-            victoryMessage.style.display = 'flex';
-            setTimeout(() => {
-                victoryMessage.classList.add('show');
-            }, 100);
-            
-            startBtn.disabled = false;
-            startBtn.textContent = 'Iniciar Jogo';
-            resetBtn.disabled = false;
-            hintBtn.disabled = true;
-        }
-        
-        // Criar efeito de celebração
-        function createCelebration() {
-            const celebrations = ['🎉', '🎊', '⭐', '🏆', '👏', '🎯', '💫', '✨'];
-            for (let i = 0; i < 25; i++) {
-                setTimeout(() => {
-                    const celebration = document.createElement('div');
-                    celebration.className = 'celebration-animation';
-                    celebration.textContent = celebrations[Math.floor(Math.random() * celebrations.length)];
-                    celebration.style.left = Math.random() * 100 + 'vw';
-                    celebration.style.animationDelay = Math.random() * 1 + 's';
-                    document.body.appendChild(celebration);
-                    
-                    // Remover após animação
-                    setTimeout(() => {
-                        celebration.remove();
-                    }, 3000);
-                }, i * 150);
-            }
-        }
-        
-        // Jogar novamente
-        function playAgain() {
-            victoryMessage.classList.remove('show');
-            setTimeout(() => {
-                victoryMessage.style.display = 'none';
-                resetGame();
-            }, 800);
-        }
-        
-        // Reiniciar o jogo
-        function resetGame() {
-            gameActive = false;
-            clearInterval(gameTimer);
-            matchedPairs = 0;
-            moves = 0;
-            score = 0;
-            gameTime = 0;
-            hintsUsed = 0;
-            selectedCards = [];
-            
-            updateDisplay();
-            updateHintButton();
-            createCards();
-            
-            startBtn.disabled = false;
-            startBtn.textContent = 'Iniciar Jogo';
-            resetBtn.disabled = false;
-            hintBtn.disabled = false;
-        }
-        
-        // Atualizar display
-        function updateDisplay() {
-            scoreElement.textContent = score;
-            pairsElement.textContent = matchedPairs;
-            movesElement.textContent = moves;
-            timeElement.textContent = gameTime;
-        }
-        
+
         // Embaralhar array
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -985,9 +637,206 @@
             }
             return array;
         }
-        
+
+        // Selecionar carta
+        function selectCard(card) {
+            if (!gameState.gameStarted) return;
+            
+            const index = parseInt(card.dataset.index);
+            
+            // Verificar se a carta já está selecionada ou combinada
+            if (card.classList.contains('selected') || card.classList.contains('matched')) {
+                return;
+            }
+            
+            // Verificar se já temos duas cartas selecionadas
+            if (gameState.selectedCards.length >= 2) {
+                return;
+            }
+            
+            // Virar a carta
+            card.classList.add('selected');
+            const tech = gameState.cards[index];
+            
+            // Substituir o conteúdo pela imagem real
+            card.innerHTML = `
+                <div class="image-content">
+                    <img src="${tech.image}" alt="${tech.name}" class="tech-icon" onerror="this.style.display='none'">
+                    <div class="tech-name">${tech.name}</div>
+                </div>
+            `;
+            
+            gameState.selectedCards.push({ card, index });
+            
+            // Verificar se temos duas cartas selecionadas
+            if (gameState.selectedCards.length === 2) {
+                gameState.moves++;
+                updateGameInfo();
+                
+                // Verificar se formam um par
+                const card1 = gameState.selectedCards[0];
+                const card2 = gameState.selectedCards[1];
+                
+                if (card1.card.dataset.tech === card2.card.dataset.tech) {
+                    // Par encontrado!
+                    setTimeout(() => {
+                        card1.card.classList.remove('selected');
+                        card2.card.classList.remove('selected');
+                        card1.card.classList.add('matched');
+                        card2.card.classList.add('matched');
+                        
+                        gameState.matchedPairs++;
+                        gameState.score += 100;
+                        updateGameInfo();
+                        
+                        gameState.selectedCards = [];
+                        
+                        // Verificar vitória
+                        if (gameState.matchedPairs === gameState.totalPairs) {
+                            endGame();
+                        }
+                    }, 500);
+                } else {
+                    // Não é um par, virar de volta
+                    setTimeout(() => {
+                        card1.card.classList.remove('selected');
+                        card2.card.classList.remove('selected');
+                        
+                        // Restaurar o conteúdo original (ponto de interrogação)
+                        card1.card.innerHTML = `
+                            <div class="image-content">
+                                <div class="question-mark">?</div>
+                                <div class="tech-name">${gameState.cards[card1.index].name}</div>
+                            </div>
+                        `;
+                        
+                        card2.card.innerHTML = `
+                            <div class="image-content">
+                                <div class="question-mark">?</div>
+                                <div class="tech-name">${gameState.cards[card2.index].name}</div>
+                            </div>
+                        `;
+                        
+                        gameState.selectedCards = [];
+                    }, 1000);
+                }
+            }
+        }
+
+        // Atualizar informações do jogo
+        function updateGameInfo() {
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('moves').textContent = gameState.moves;
+            document.getElementById('matches').textContent = gameState.matchedPairs;
+        }
+
+        // Iniciar jogo
+        function startGame() {
+            if (gameState.gameStarted) return;
+            
+            gameState.gameStarted = true;
+            gameState.timer = 0;
+            
+            // Iniciar temporizador
+            gameState.timerInterval = setInterval(() => {
+                gameState.timer++;
+                const minutes = Math.floor(gameState.timer / 60).toString().padStart(2, '0');
+                const seconds = (gameState.timer % 60).toString().padStart(2, '0');
+                document.getElementById('timer').textContent = `${minutes}:${seconds}`;
+            }, 1000);
+        }
+
+        // Reiniciar jogo
+        function resetGame() {
+            // Parar temporizador
+            if (gameState.timerInterval) {
+                clearInterval(gameState.timerInterval);
+            }
+            
+            // Resetar estado do jogo
+            gameState.selectedCards = [];
+            gameState.matchedPairs = 0;
+            gameState.moves = 0;
+            gameState.score = 0;
+            gameState.gameStarted = false;
+            gameState.timer = 0;
+            
+            // Atualizar interface
+            updateGameInfo();
+            document.getElementById('timer').textContent = '00:00';
+            
+            // Recriar tabuleiro
+            createGameBoard();
+        }
+
+        // Finalizar jogo
+        function endGame() {
+            // Parar temporizador
+            clearInterval(gameState.timerInterval);
+            
+            // Calcular pontuação bônus baseada no tempo e jogadas
+            const timeBonus = Math.max(0, 500 - gameState.timer * 2);
+            const movesBonus = Math.max(0, 300 - gameState.moves * 5);
+            gameState.score += timeBonus + movesBonus;
+            
+            // Atualizar estatísticas finais
+            updateGameInfo();
+            
+            // Mostrar mensagem de vitória
+            const minutes = Math.floor(gameState.timer / 60).toString().padStart(2, '0');
+            const seconds = (gameState.timer % 60).toString().padStart(2, '0');
+            
+            document.getElementById('victoryStats').textContent = 
+                `Sua pontuação: ${gameState.score} | Jogadas: ${gameState.moves} | Tempo: ${minutes}:${seconds}`;
+            
+            const victoryMessage = document.getElementById('victoryMessage');
+            victoryMessage.style.display = 'flex';
+            setTimeout(() => {
+                victoryMessage.classList.add('show');
+            }, 100);
+            
+            // Adicionar animação de celebração
+            createCelebration();
+        }
+
+        // Esconder mensagem de vitória
+        function hideVictoryMessage() {
+            const victoryMessage = document.getElementById('victoryMessage');
+            victoryMessage.classList.remove('show');
+            setTimeout(() => {
+                victoryMessage.style.display = 'none';
+                resetGame();
+            }, 500);
+        }
+
+        // Criar animação de celebração
+        function createCelebration() {
+            const container = document.querySelector('.container');
+            const celebrationImages = ['sdasda.png', 'as.png', 'das.png', 'eq.png', 'a.png', 'sq.png', 'sew.jpeg'];
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const img = document.createElement('img');
+                    img.src = celebrationImages[Math.floor(Math.random() * celebrationImages.length)];
+                    img.className = 'celebration-image';
+                    img.style.left = `${Math.random() * 80 + 10}%`;
+                    container.appendChild(img);
+                    
+                    // Remover após a animação
+                    setTimeout(() => {
+                        img.remove();
+                    }, 3000);
+                }, i * 150);
+            }
+        }
+
+        // Mostrar instruções
+        function showInstructions() {
+            alert("Como Jogar:\n\n1. Clique em 'Iniciar Jogo' para começar\n2. Clique em duas cartas para tentar encontrar pares\n3. Cada par encontrado aumenta sua pontuação\n4. Complete o jogo no menor tempo e com menos jogadas possível\n5. Use os botões de dificuldade para ajustar o desafio");
+        }
+
         // Inicializar o jogo quando a página carregar
-        window.onload = init;
+        window.onload = initGame;
     </script>
 </body>
 </html>
