@@ -474,7 +474,7 @@
                 Médio (6 pares)
             </button>
             <button class="difficulty-btn hard" onclick="setDifficulty('hard')">
-                Difícil (8 pares)
+                Difícil (10 pares)
             </button>
         </div>
         
@@ -589,8 +589,8 @@
                     infoText = '<strong>Médio:</strong> 6 pares de tecnologias - Tabuleiro 4x6';
                     break;
                 case 'hard':
-                    gameState.totalPairs = 8;
-                    infoText = '<strong>Difícil:</strong> 8 pares de tecnologias - Tabuleiro 4x8';
+                    gameState.totalPairs = 10;
+                    infoText = '<strong>Difícil:</strong> 10 pares de tecnologias - Tabuleiro 5x8';
                     break;
             }
             document.getElementById('difficultyInfo').innerHTML = infoText;
@@ -613,8 +613,16 @@
             
             // Definir layout do grid baseado na dificuldade
             let gridColumns = 4;
-            if (gameState.difficulty === 'medium') gridColumns = 6;
-            if (gameState.difficulty === 'hard') gridColumns = 8;
+            let gridRows = 4;
+            
+            if (gameState.difficulty === 'medium') {
+                gridColumns = 6;
+                gridRows = 4;
+            }
+            if (gameState.difficulty === 'hard') {
+                gridColumns = 8;
+                gridRows = 5;
+            }
             
             gameBoard.style.gridTemplateColumns = `repeat(${gridColumns}, 1fr)`;
             
