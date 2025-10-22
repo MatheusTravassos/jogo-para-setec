@@ -594,7 +594,7 @@
                     break;
                 case 'hard':
                     gameState.totalPairs = 10;
-                    infoText = '<strong>Difícil:</strong> 10 pares de tecnologias - Tabuleiro 5x8';
+                    infoText = '<strong>Difícil:</strong> 10 pares de tecnologias - Tabuleiro 4x5';
                     break;
             }
             document.getElementById('difficultyInfo').innerHTML = infoText;
@@ -624,8 +624,8 @@
                 gridRows = 4;
             }
             if (gameState.difficulty === 'hard') {
-                gridColumns = 8;
-                gridRows = 5;
+                gridColumns = 5; // Alterado de 8 para 5
+                gridRows = 4;   // Alterado de 5 para 4
             }
             
             gameBoard.style.gridTemplateColumns = `repeat(${gridColumns}, 1fr)`;
